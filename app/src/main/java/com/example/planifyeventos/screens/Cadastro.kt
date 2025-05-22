@@ -36,11 +36,12 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
 import com.example.planifyeventos.R
 
 
 @Composable
-fun Cadastro(modifier: Modifier = Modifier) {
+fun Cadastro(navegacao:NavHostController?) {
 
     val nome = remember { mutableStateOf("") }
     val sobrenome = remember { mutableStateOf("") }
@@ -251,5 +252,5 @@ fun Cadastro(modifier: Modifier = Modifier) {
 @Preview
 @Composable
 private fun CadastroPreview() {
-    Cadastro()
+    Cadastro(navegacao = null)
 }

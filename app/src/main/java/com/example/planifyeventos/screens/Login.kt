@@ -37,11 +37,12 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
 import com.example.planifyeventos.R
 
 
 @Composable
-fun Login(modifier: Modifier = Modifier) {
+fun Login(navegacao:NavHostController?) {
     val email = remember { mutableStateOf("") }
     val senha = remember { mutableStateOf("") }
 
@@ -164,5 +165,5 @@ fun Login(modifier: Modifier = Modifier) {
 @Preview
 @Composable
 private fun LoginPreview() {
-    Login()
+    Login(navegacao = null)
 }
