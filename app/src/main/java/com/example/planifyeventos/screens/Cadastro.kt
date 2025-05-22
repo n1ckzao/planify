@@ -213,7 +213,9 @@ fun Cadastro(navegacao:NavHostController?) {
                         horizontalAlignment = Alignment.CenterHorizontally
                     ){
                         Button(
-                            onClick = {},
+                            onClick = {
+                                navegacao?.navigate(route = "home")
+                            },
                             shape = RoundedCornerShape(48.dp),
                             modifier = Modifier
                                 .width(200.dp)
