@@ -54,8 +54,7 @@ fun Login(navegacao:NavHostController?) {
         Column (
             modifier = Modifier
                 .fillMaxSize()
-                .padding(12.dp)
-                .verticalScroll(rememberScrollState()),
+                .padding(12.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ){
@@ -143,17 +142,25 @@ fun Login(navegacao:NavHostController?) {
                         Row (
                             modifier = Modifier
                                 .fillMaxWidth(),
-                            horizontalArrangement = Arrangement.Center
-                        ){
+                            horizontalArrangement = Arrangement.Center,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
                             Text(
                                 text = "Não tem uma conta?",
                                 fontSize = 15.sp
                             )
+                            Button(
+                                modifier = Modifier.height(35.dp),
+                                colors = ButtonDefaults.buttonColors(Color.Transparent),
+                                onClick = {
+                                    navegacao?.navigate(route = "cadastro")
+                                }) {
                             Text(
                                 text = " Cadastre-se",
                                 fontSize = 15.sp,
                                 color = Color(0xFF037EF7)
                             )
+                            }
                         }
                     }
                 }

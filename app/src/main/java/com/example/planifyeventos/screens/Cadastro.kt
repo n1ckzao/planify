@@ -1,5 +1,6 @@
 package com.example.planifyeventos.screens
 
+import android.content.Context
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -29,6 +30,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
@@ -59,8 +61,7 @@ fun Cadastro(navegacao:NavHostController?) {
         Column (
             modifier = Modifier
                 .fillMaxSize()
-                .padding(12.dp)
-                .verticalScroll(rememberScrollState()),
+                .padding(12.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ){
@@ -226,21 +227,29 @@ fun Cadastro(navegacao:NavHostController?) {
                             )
                         }
 
-                        Spacer(modifier = Modifier.height(20.dp))
+                        Spacer(modifier = Modifier.height(10.dp))
                         Row (
                             modifier = Modifier
                                 .fillMaxWidth(),
-                            horizontalArrangement = Arrangement.Center
+                            horizontalArrangement = Arrangement.Center,
+                            verticalAlignment = Alignment.CenterVertically
                         ){
                             Text(
                                 text = "Já tem uma conta?",
                                 fontSize = 15.sp
                             )
-                            Text(
-                                text = " Entre",
-                                fontSize = 15.sp,
-                                color = Color(0xFF037EF7)
-                            )
+                            Button(
+                                modifier = Modifier.height(35.dp),
+                                colors = ButtonDefaults.buttonColors(Color.Transparent),
+                                onClick = {
+                                navegacao?.navigate(route = "login")
+                            }) {
+                                Text(
+                                    text = "Entrar",
+                                    fontSize = 15.sp,
+                                    color = Color(0xFF0C75FF)
+                                )
+                            }
                         }
                     }
                 }
