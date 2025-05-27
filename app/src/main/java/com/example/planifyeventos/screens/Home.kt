@@ -9,9 +9,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.NavHostController
 
 @Composable
-fun Home(modifier: Modifier = Modifier) {
+fun Home(navegacao:NavHostController?) {
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -28,5 +29,5 @@ fun Home(modifier: Modifier = Modifier) {
 @Preview
 @Composable
 private fun HomePreview() {
-    Home()
+    Home(navegacao = null)
 }
