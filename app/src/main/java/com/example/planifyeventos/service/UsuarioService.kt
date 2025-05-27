@@ -21,7 +21,7 @@ interface UsuarioService {
     )
 
     @Headers("Content-Type: application/json")
-    fun registerUsuaio(@Body user: com.example.planifyeventos.model.Usuario): retrofit2.Call<Usuario>
+    fun registerUsuario(@Body user: com.example.planifyeventos.model.Usuario): retrofit2.Call<Usuario>
 
     @POST("usuario")
     fun inserirUsuario(@Body usuario: Usuario): Call<Usuario>
