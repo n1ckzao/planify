@@ -206,7 +206,7 @@ fun Cadastro(navegacao:NavHostController) {
                     ){
                         Button(
                             onClick = {
-                                val user = Usuario(
+                                val Usuario = Usuario(
                                     nome = nome.value,
                                     email = email.value,
                                     senha = senha.value,
