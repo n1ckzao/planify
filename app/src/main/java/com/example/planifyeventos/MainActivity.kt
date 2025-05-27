@@ -20,7 +20,7 @@ class MainActivity : ComponentActivity() {
             val navegacao = rememberNavController()
             NavHost(
                 navController = navegacao,
-                startDestination = "perfil"
+                startDestination = "login"
             ) {
                 composable(route = "cadastro") { Cadastro(navegacao) }
                 composable(route = "login") { Login(navegacao) }

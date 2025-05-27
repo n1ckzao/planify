@@ -1,6 +1,7 @@
 package com.example.planifyeventos.screens
 
 import android.content.Context
+import android.util.Log
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -39,18 +40,20 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 import com.example.planifyeventos.R
+import com.example.planifyeventos.model.Usuario
+import com.example.planifyeventos.service.RetrofitFactory
 
 
 @Composable
-fun Cadastro(navegacao:NavHostController?) {
+fun Cadastro(navegacao:NavHostController) {
 
     val nome = remember { mutableStateOf("") }
-    val sobrenome = remember { mutableStateOf("") }
     val dataNascimento = remember { mutableStateOf("") }
     val email = remember { mutableStateOf("") }
     val senha = remember { mutableStateOf("") }
-    val confirmarSenha = remember { mutableStateOf("") }
+    val fotoPerfil = remember { mutableStateOf("") }
     val palavraChave = remember { mutableStateOf("") }
 
     Box(
@@ -112,17 +115,6 @@ fun Cadastro(navegacao:NavHostController?) {
                             text = "Sobrenome:",
                             fontSize = 15.sp
                         )
-                        OutlinedTextField(
-                            value = sobrenome.value,
-                            onValueChange = { sobrenome.value = it },
-                            shape = RoundedCornerShape(23.dp),
-                            modifier = Modifier
-                                .height(45.dp),
-                            keyboardOptions = KeyboardOptions(
-                                keyboardType = KeyboardType.Text,
-                                imeAction = ImeAction.Next
-                            )
-                        )
                         Spacer(modifier = Modifier.height(8.dp))
                         Text(
                             text = "Data de nascimento:",
@@ -178,8 +170,8 @@ fun Cadastro(navegacao:NavHostController?) {
                             fontSize = 15.sp
                         )
                         OutlinedTextField(
-                            value = confirmarSenha.value,
-                            onValueChange = { confirmarSenha.value = it },
+                            value = "",
+                            onValueChange = {},
                             shape = RoundedCornerShape(23.dp),
                             modifier = Modifier
                                 .height(45.dp),
@@ -214,13 +206,42 @@ fun Cadastro(navegacao:NavHostController?) {
                     ){
                         Button(
                             onClick = {
-                                navegacao?.navigate(route = "perfil")
+                                val user = Usuario(
+                                    nome = nome.value,
+                                    email = email.value,
+                                    senha = senha.value,
+                                    data_nascimento = dataNascimento.value,
+                                    foto_perfil = fotoPerfil.value,
+                                    palavra_chave = palavraChave.value
+                                )
+
+                                val call = RetrofitFactory().getUsuarioService().inserirUsuario(Usuario)
+
+                                call.enqueue(object : retrofit2.Callback<Usuario> {
+                                    override fun onResponse(
+                                        call: retrofit2.Call<Usuario>,
+                                        response: retrofit2.Response<Usuario>
+                                    ) {
+                                        if (response.isSuccessful) {
+                                            Log.i("API", "Usuário cadastrado com sucesso: ${response.body()}")
+                                        } else {
+                                            Log.e("API", "Erro ao cadastrar: ${response.code()}")
+                                        }
+                                    }
+
+                                    override fun onFailure(call: retrofit2.Call<Usuario>, t: Throwable) {
+                                        Log.e("API", "Falha na requisição: ${t.message}")
+                                    }
+                                })
                             },
-                            shape = RoundedCornerShape(48.dp),
                             modifier = Modifier
-                                .width(200.dp)
-                                .height(40.dp),
-                            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF037EF7))
+                                .padding(top = 30.dp)
+                                .height(50.dp)
+                                .align(Alignment.CenterHorizontally),
+                            shape = RoundedCornerShape(0.dp),
+                            colors = ButtonDefaults.buttonColors(
+                                Color(0XFFC83B1B)
+                            )
                         ) {
                             Text(
                                 text = "Cadastrar",
@@ -244,7 +265,7 @@ fun Cadastro(navegacao:NavHostController?) {
                                 modifier = Modifier.height(35.dp),
                                 colors = ButtonDefaults.buttonColors(Color.Transparent),
                                 onClick = {
-                                navegacao?.navigate(route = "login")
+                                navegacao.navigate(route = "login")
                             }) {
                                 Text(
                                     text = "Entrar",
@@ -263,5 +284,6 @@ fun Cadastro(navegacao:NavHostController?) {
 @Preview
 @Composable
 private fun CadastroPreview() {
-    Cadastro(navegacao = null)
+    val navController = rememberNavController()
+    Cadastro(navegacao = navController)
 }
