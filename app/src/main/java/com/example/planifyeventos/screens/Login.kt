@@ -38,6 +38,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 import com.example.planifyeventos.R
 
 
@@ -94,7 +95,7 @@ fun Login(navegacao:NavHostController?) {
                             onValueChange = { email.value = it },
                             shape = RoundedCornerShape(23.dp),
                             modifier = Modifier
-                                .height(35.dp),
+                                .height(45.dp),
                             keyboardOptions = KeyboardOptions(
                                 keyboardType = KeyboardType.Email,
                                 imeAction = ImeAction.Next
@@ -110,10 +111,10 @@ fun Login(navegacao:NavHostController?) {
                             onValueChange = { senha.value = it },
                             shape = RoundedCornerShape(23.dp),
                             modifier = Modifier
-                                .height(35.dp),
+                                .height(45.dp),
                             keyboardOptions = KeyboardOptions(
                                 keyboardType = KeyboardType.Password,
-                                imeAction = ImeAction.Next
+                                imeAction = ImeAction.Done
                             )
                         )
                         Spacer(modifier = Modifier.height(20.dp))
@@ -125,7 +126,9 @@ fun Login(navegacao:NavHostController?) {
                         horizontalAlignment = Alignment.CenterHorizontally
                     ){
                         Button(
-                            onClick = {},
+                            onClick = {
+                                navegacao?.navigate(route = "perfil")
+                            },
                             shape = RoundedCornerShape(48.dp),
                             modifier = Modifier
                                 .width(200.dp)
@@ -156,7 +159,7 @@ fun Login(navegacao:NavHostController?) {
                                     navegacao?.navigate(route = "cadastro")
                                 }) {
                             Text(
-                                text = " Cadastre-se",
+                                text = "Cadastre-se",
                                 fontSize = 15.sp,
                                 color = Color(0xFF037EF7)
                             )

@@ -101,7 +101,7 @@ fun Cadastro(navegacao:NavHostController?) {
                             onValueChange = { nome.value = it },
                             shape = RoundedCornerShape(23.dp),
                             modifier = Modifier
-                                .height(35.dp),
+                                .height(45.dp),
                             keyboardOptions = KeyboardOptions(
                                 keyboardType = KeyboardType.Text,
                                 imeAction = ImeAction.Next
@@ -117,7 +117,7 @@ fun Cadastro(navegacao:NavHostController?) {
                             onValueChange = { sobrenome.value = it },
                             shape = RoundedCornerShape(23.dp),
                             modifier = Modifier
-                                .height(35.dp),
+                                .height(45.dp),
                             keyboardOptions = KeyboardOptions(
                                 keyboardType = KeyboardType.Text,
                                 imeAction = ImeAction.Next
@@ -133,7 +133,7 @@ fun Cadastro(navegacao:NavHostController?) {
                             onValueChange = { dataNascimento.value = it },
                             shape = RoundedCornerShape(23.dp),
                             modifier = Modifier
-                                .height(35.dp)
+                                .height(45.dp)
                                 .width(150.dp),
                             keyboardOptions = KeyboardOptions(
                                 keyboardType = KeyboardType.Number,
@@ -150,7 +150,7 @@ fun Cadastro(navegacao:NavHostController?) {
                             onValueChange = { email.value = it },
                             shape = RoundedCornerShape(23.dp),
                             modifier = Modifier
-                                .height(35.dp),
+                                .height(45.dp),
                             keyboardOptions = KeyboardOptions(
                                 keyboardType = KeyboardType.Email,
                                 imeAction = ImeAction.Next
@@ -166,7 +166,7 @@ fun Cadastro(navegacao:NavHostController?) {
                             onValueChange = { senha.value = it },
                             shape = RoundedCornerShape(23.dp),
                             modifier = Modifier
-                                .height(35.dp),
+                                .height(45.dp),
                             keyboardOptions = KeyboardOptions(
                                 keyboardType = KeyboardType.Password,
                                 imeAction = ImeAction.Next
@@ -182,7 +182,7 @@ fun Cadastro(navegacao:NavHostController?) {
                             onValueChange = { confirmarSenha.value = it },
                             shape = RoundedCornerShape(23.dp),
                             modifier = Modifier
-                                .height(35.dp),
+                                .height(45.dp),
                             keyboardOptions = KeyboardOptions(
                                 keyboardType = KeyboardType.Password,
                                 imeAction = ImeAction.Next
@@ -198,7 +198,7 @@ fun Cadastro(navegacao:NavHostController?) {
                             onValueChange = { palavraChave.value = it },
                             shape = RoundedCornerShape(23.dp),
                             modifier = Modifier
-                                .height(35.dp),
+                                .height(45.dp),
                             keyboardOptions = KeyboardOptions(
                                 keyboardType = KeyboardType.Text,
                                 imeAction = ImeAction.Next
@@ -214,7 +214,7 @@ fun Cadastro(navegacao:NavHostController?) {
                     ){
                         Button(
                             onClick = {
-                                navegacao?.navigate(route = "home")
+                                navegacao?.navigate(route = "perfil")
                             },
                             shape = RoundedCornerShape(48.dp),
                             modifier = Modifier
