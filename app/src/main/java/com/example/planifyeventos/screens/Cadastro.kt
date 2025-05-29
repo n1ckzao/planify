@@ -53,6 +53,7 @@ fun Cadastro(navegacao:NavHostController) {
     val dataNascimento = remember { mutableStateOf("") }
     val email = remember { mutableStateOf("") }
     val senha = remember { mutableStateOf("") }
+    val confirmarSenha = remember { mutableStateOf("") }
     val fotoPerfil = remember { mutableStateOf("") }
     val palavraChave = remember { mutableStateOf("") }
 
@@ -112,11 +113,6 @@ fun Cadastro(navegacao:NavHostController) {
                         )
                         Spacer(modifier = Modifier.height(8.dp))
                         Text(
-                            text = "Sobrenome:",
-                            fontSize = 15.sp
-                        )
-                        Spacer(modifier = Modifier.height(8.dp))
-                        Text(
                             text = "Data de nascimento:",
                             fontSize = 15.sp
                         )
@@ -170,8 +166,8 @@ fun Cadastro(navegacao:NavHostController) {
                             fontSize = 15.sp
                         )
                         OutlinedTextField(
-                            value = "",
-                            onValueChange = {},
+                            value = confirmarSenha.value,
+                            onValueChange = {confirmarSenha.value = it},
                             shape = RoundedCornerShape(23.dp),
                             modifier = Modifier
                                 .height(45.dp),
@@ -193,10 +189,9 @@ fun Cadastro(navegacao:NavHostController) {
                                 .height(45.dp),
                             keyboardOptions = KeyboardOptions(
                                 keyboardType = KeyboardType.Text,
-                                imeAction = ImeAction.Next
+                                imeAction = ImeAction.Done
                             )
                         )
-                        Spacer(modifier = Modifier.height(20.dp))
                     }
                     Column (
                         modifier = Modifier
@@ -233,14 +228,15 @@ fun Cadastro(navegacao:NavHostController) {
                                         Log.e("API", "Falha na requisição: ${t.message}")
                                     }
                                 })
+                                navegacao.navigate(route = "perfil")
                             },
+
                             modifier = Modifier
-                                .padding(top = 30.dp)
-                                .height(50.dp)
+                                .width(200.dp)
                                 .align(Alignment.CenterHorizontally),
-                            shape = RoundedCornerShape(0.dp),
+                            shape = RoundedCornerShape(48.dp),
                             colors = ButtonDefaults.buttonColors(
-                                Color(0XFFC83B1B)
+                                Color(0xFF008EFF)
                             )
                         ) {
                             Text(
@@ -253,6 +249,7 @@ fun Cadastro(navegacao:NavHostController) {
                         Spacer(modifier = Modifier.height(10.dp))
                         Row (
                             modifier = Modifier
+                                .height(60.dp)
                                 .fillMaxWidth(),
                             horizontalArrangement = Arrangement.Center,
                             verticalAlignment = Alignment.CenterVertically
@@ -262,7 +259,7 @@ fun Cadastro(navegacao:NavHostController) {
                                 fontSize = 15.sp
                             )
                             Button(
-                                modifier = Modifier.height(35.dp),
+                                modifier = Modifier.height(45.dp),
                                 colors = ButtonDefaults.buttonColors(Color.Transparent),
                                 onClick = {
                                 navegacao.navigate(route = "login")
