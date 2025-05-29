@@ -1,5 +1,6 @@
 package com.example.planifyeventos.screens
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -25,14 +26,20 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import androidx.compose.foundation.layout.*
+import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.platform.LocalContext
+import com.example.planifyeventos.utils.SharedPrefHelper
 
 @Composable
 fun Perfil(navegacao: NavHostController) {
-    val usuarioList = remember { mutableStateOf<List<Usuario>>(emptyList()) }
+    val usuarioLogado = remember { mutableStateOf<Usuario?>(null) }
     val loading = remember { mutableStateOf(true) }
     val errorMessage = remember { mutableStateOf<String?>(null) }
+    val context = LocalContext.current
+
+    val emailSalvo = SharedPrefHelper.recuperarEmail(context)
 
     LaunchedEffect(Unit) {
         val callUsuario = RetrofitFactory()
@@ -43,14 +50,17 @@ fun Perfil(navegacao: NavHostController) {
             override fun onResponse(call: Call<Result>, response: Response<Result>) {
                 loading.value = false
                 if (response.isSuccessful) {
-                    response.body()?.results?.let {
-                        usuarioList.value = it
+                    val usuarioEncontrado = response.body()?.usuario?.find {
+                        it.email == emailSalvo
+                    }
+                    if (usuarioEncontrado != null) {
+                        usuarioLogado.value = usuarioEncontrado
                         errorMessage.value = null
-                    } ?: run {
-                        errorMessage.value = "Nenhum usuário encontrado"
+                    } else {
+                        errorMessage.value = "Usuário não encontrado."
                     }
                 } else {
-                    errorMessage.value = "Erro ao carregar usuários: ${response.code()}"
+                    errorMessage.value = "Erro ao carregar usuário: ${response.code()}"
                 }
             }
 
@@ -71,6 +81,7 @@ fun Perfil(navegacao: NavHostController) {
             loading.value -> {
                 CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
             }
+
             errorMessage.value != null -> {
                 Text(
                     text = errorMessage.value ?: "Erro desconhecido",
@@ -78,19 +89,36 @@ fun Perfil(navegacao: NavHostController) {
                     modifier = Modifier.align(Alignment.Center)
                 )
             }
-            else -> {
-                LazyColumn {
-                    items(usuarioList.value) { usuario ->
-                        UsuarioCard(
-                            nome = usuario.nome,
-                            email = usuario.email,
-                            data_nascimento = usuario.data_nascimento,
-                            palavra_chave = usuario.palavra_chave,
-                            foto_perfil = usuario.foto_perfil,
-                            senha = usuario.senha
-                        )
-                        Spacer(modifier = Modifier.height(8.dp))
+
+            usuarioLogado.value != null -> {
+                Column(modifier = Modifier.fillMaxSize()) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(bottom = 16.dp),
+                        horizontalArrangement = Arrangement.End
+                    ) {
+                        Button(
+                            onClick = {
+                                SharedPrefHelper.deslogar(context)
+                                navegacao.navigate("login") {
+                                    popUpTo("perfil") { inclusive = true }
+                                }
+                            }
+                        ) {
+                            Text("Sair")
+                        }
                     }
+
+                    // Exibe apenas o usuário logado
+                    UsuarioCard(
+                        nome = usuarioLogado.value!!.nome,
+                        email = usuarioLogado.value!!.email,
+                        data_nascimento = usuarioLogado.value!!.data_nascimento,
+                        palavra_chave = usuarioLogado.value!!.palavra_chave,
+                        foto_perfil = usuarioLogado.value!!.foto_perfil,
+                        senha = usuarioLogado.value!!.senha
+                    )
                 }
             }
         }

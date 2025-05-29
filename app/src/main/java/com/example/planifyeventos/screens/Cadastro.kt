@@ -104,6 +104,7 @@ fun Cadastro(navegacao:NavHostController) {
                             value = nome.value,
                             onValueChange = { nome.value = it },
                             shape = RoundedCornerShape(23.dp),
+                            singleLine = true,
                             modifier = Modifier
                                 .height(45.dp),
                             keyboardOptions = KeyboardOptions(
@@ -120,6 +121,7 @@ fun Cadastro(navegacao:NavHostController) {
                             value = dataNascimento.value,
                             onValueChange = { dataNascimento.value = it },
                             shape = RoundedCornerShape(23.dp),
+                            singleLine = true,
                             modifier = Modifier
                                 .height(45.dp)
                                 .width(150.dp),
@@ -137,6 +139,7 @@ fun Cadastro(navegacao:NavHostController) {
                             value = email.value,
                             onValueChange = { email.value = it },
                             shape = RoundedCornerShape(23.dp),
+                            singleLine = true,
                             modifier = Modifier
                                 .height(45.dp),
                             keyboardOptions = KeyboardOptions(
@@ -153,6 +156,7 @@ fun Cadastro(navegacao:NavHostController) {
                             value = senha.value,
                             onValueChange = { senha.value = it },
                             shape = RoundedCornerShape(23.dp),
+                            singleLine = true,
                             modifier = Modifier
                                 .height(45.dp),
                             keyboardOptions = KeyboardOptions(
@@ -169,6 +173,7 @@ fun Cadastro(navegacao:NavHostController) {
                             value = confirmarSenha.value,
                             onValueChange = {confirmarSenha.value = it},
                             shape = RoundedCornerShape(23.dp),
+                            singleLine = true,
                             modifier = Modifier
                                 .height(45.dp),
                             keyboardOptions = KeyboardOptions(
@@ -185,6 +190,7 @@ fun Cadastro(navegacao:NavHostController) {
                             value = palavraChave.value,
                             onValueChange = { palavraChave.value = it },
                             shape = RoundedCornerShape(23.dp),
+                            singleLine = true,
                             modifier = Modifier
                                 .height(45.dp),
                             keyboardOptions = KeyboardOptions(

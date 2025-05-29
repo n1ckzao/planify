@@ -11,6 +11,9 @@ import com.example.planifyeventos.screens.Cadastro
 import com.example.planifyeventos.screens.Home
 import com.example.planifyeventos.screens.Login
 import com.example.planifyeventos.screens.Perfil
+import com.example.planifyeventos.screens.RecuperarSenha
+import com.example.planifyeventos.screens.RedefinirSenha
+import com.example.planifyeventos.utils.SharedPrefHelper
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -18,15 +21,23 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             val navegacao = rememberNavController()
+            val context = applicationContext
+
+            val rotaInicial = if (SharedPrefHelper.obterEmail(context) != null) {
+                "perfil"
+            } else {
+                "login"
+            }
+
             NavHost(
                 navController = navegacao,
-                startDestination = "login"
+                startDestination = rotaInicial
             ) {
                 composable(route = "cadastro") { Cadastro(navegacao) }
                 composable(route = "login") { Login(navegacao) }
                 composable(route = "home") { Home(navegacao) }
                 composable(route = "perfil") { Perfil(navegacao) }
-
+                composable(route = "recuperar_senha") { RecuperarSenha(navegacao) }
             }
         }
     }

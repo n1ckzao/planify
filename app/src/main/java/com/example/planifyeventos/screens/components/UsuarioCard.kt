@@ -2,7 +2,7 @@ package com.example.planifyeventos.screens.components
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
+import com.example.planifyeventos.utils.formatarData
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -13,11 +13,13 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
@@ -29,14 +31,18 @@ fun UsuarioCard(
     senha: String = "Senha",
     data_nascimento: String = "Data de nascimento",
     palavra_chave: String = "Palavra chave",
-    foto_perfil: String = "Url da imagem",
+    foto_perfil: String = "Url da imagem"
 ) {
     Card(
         modifier = Modifier
             .padding(8.dp)
             .fillMaxWidth()
             .height(300.dp),
-        colors = CardDefaults.cardColors(containerColor = Color(0xaaffffff))
+        colors = CardDefaults.cardColors(containerColor = Color(0xaaffffff)),
+        border = BorderStroke(
+            width = 16.dp,
+            color = Color(0xFF008EFF)
+        )
     ) {
         Column (
             modifier = Modifier.fillMaxSize(),
@@ -44,22 +50,37 @@ fun UsuarioCard(
         ){
             Card(
                 modifier = Modifier
-                    .padding(16.dp)
+                    .padding(top = 26.dp)
                     .size(90.dp),
-                colors = CardDefaults.cardColors(containerColor = Color.Blue),
+                colors = CardDefaults.cardColors(containerColor = Color(0xFF037EF7)),
                 shape = CircleShape
             ) {
                 AsyncImage(
                     model = foto_perfil,
-                    contentDescription = ""
+                    contentDescription = "",
+                    modifier = Modifier
+                        .fillMaxSize(),
+                    contentScale = ContentScale.Crop
                 )
             }
             Spacer(modifier = Modifier.width(16.dp))
             Column {
                 Text(text = nome)
+                Spacer(modifier = Modifier.height(8.dp))
+                HorizontalDivider(modifier = Modifier.width(300.dp), color = Color.Black)
+                Spacer(modifier = Modifier.height(8.dp))
                 Text(text = email)
-                Text(text = data_nascimento)
+                Spacer(modifier = Modifier.height(8.dp))
+                HorizontalDivider(modifier = Modifier.width(300.dp), color = Color.Black)
+                Spacer(modifier = Modifier.height(8.dp))
+                Text(text = "Data: ${data_nascimento.formatarData()}")
+                Spacer(modifier = Modifier.height(8.dp))
+                HorizontalDivider(modifier = Modifier.width(300.dp), color = Color.Black)
+                Spacer(modifier = Modifier.height(8.dp))
                 Text(text = palavra_chave)
+                Spacer(modifier = Modifier.height(8.dp))
+                HorizontalDivider(modifier = Modifier.width(300.dp), color = Color.Black)
+                Spacer(modifier = Modifier.height(8.dp))
                 Text(text = senha)
             }
         }
