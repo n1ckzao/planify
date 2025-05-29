@@ -12,7 +12,6 @@ import com.example.planifyeventos.screens.Home
 import com.example.planifyeventos.screens.Login
 import com.example.planifyeventos.screens.Perfil
 import com.example.planifyeventos.screens.RecuperarSenha
-import com.example.planifyeventos.screens.RedefinirSenha
 import com.example.planifyeventos.utils.SharedPrefHelper
 
 class MainActivity : ComponentActivity() {
