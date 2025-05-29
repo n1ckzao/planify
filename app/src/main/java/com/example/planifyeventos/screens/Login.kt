@@ -38,7 +38,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.rememberNavController
+import androidx.compose.ui.text.input.PasswordVisualTransformation
 import com.example.planifyeventos.R
 
 
@@ -110,12 +110,12 @@ fun Login(navegacao:NavHostController?) {
                             value = senha.value,
                             onValueChange = { senha.value = it },
                             shape = RoundedCornerShape(23.dp),
-                            modifier = Modifier
-                                .height(45.dp),
+                            modifier = Modifier.height(45.dp),
                             keyboardOptions = KeyboardOptions(
                                 keyboardType = KeyboardType.Password,
                                 imeAction = ImeAction.Done
-                            )
+                            ),
+                            visualTransformation = PasswordVisualTransformation()
                         )
                         Spacer(modifier = Modifier.height(20.dp))
                     }
@@ -127,6 +127,9 @@ fun Login(navegacao:NavHostController?) {
                     ){
                         Button(
                             onClick = {
+                                if (email.value.isBlank() || senha.value.isBlank()) {
+                                    return@Button
+                                }
                                 navegacao?.navigate(route = "perfil")
                             },
                             shape = RoundedCornerShape(48.dp),

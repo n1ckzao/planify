@@ -2,7 +2,6 @@ package com.example.planifyeventos.screens
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -25,26 +24,39 @@ import com.example.planifyeventos.service.RetrofitFactory
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import androidx.compose.foundation.layout.*
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.ui.Alignment
 
 @Composable
 fun Perfil(navegacao: NavHostController) {
     val usuarioList = remember { mutableStateOf<List<Usuario>>(emptyList()) }
+    val loading = remember { mutableStateOf(true) }
+    val errorMessage = remember { mutableStateOf<String?>(null) }
 
-    LaunchedEffect (Unit) {
+    LaunchedEffect(Unit) {
         val callUsuario = RetrofitFactory()
             .getUsuarioService()
             .listarUsuarios()
 
         callUsuario.enqueue(object : Callback<Result> {
             override fun onResponse(call: Call<Result>, response: Response<Result>) {
+                loading.value = false
                 if (response.isSuccessful) {
                     response.body()?.results?.let {
                         usuarioList.value = it
+                        errorMessage.value = null
+                    } ?: run {
+                        errorMessage.value = "Nenhum usuário encontrado"
                     }
+                } else {
+                    errorMessage.value = "Erro ao carregar usuários: ${response.code()}"
                 }
             }
 
             override fun onFailure(call: Call<Result>, t: Throwable) {
+                loading.value = false
+                errorMessage.value = "Falha na conexão: ${t.message}"
             }
         })
     }
@@ -53,31 +65,35 @@ fun Perfil(navegacao: NavHostController) {
         modifier = Modifier
             .fillMaxSize()
             .background(Color.White)
+            .padding(16.dp)
     ) {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(16.dp)
-        ) {
-            LazyColumn {
-                items(usuarioList.value) {
-                    UsuarioCard(
-                        nome = it.nome,
-                        email = it.email,
-                        data_nascimento = it.data_nascimento,
-                        palavra_chave = it.palavra_chave,
-                        foto_perfil = it.foto_perfil
-                    )
+        when {
+            loading.value -> {
+                CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+            }
+            errorMessage.value != null -> {
+                Text(
+                    text = errorMessage.value ?: "Erro desconhecido",
+                    color = Color.Red,
+                    modifier = Modifier.align(Alignment.Center)
+                )
+            }
+            else -> {
+                LazyColumn {
+                    items(usuarioList.value) { usuario ->
+                        UsuarioCard(
+                            nome = usuario.nome,
+                            email = usuario.email,
+                            data_nascimento = usuario.data_nascimento,
+                            palavra_chave = usuario.palavra_chave,
+                            foto_perfil = usuario.foto_perfil,
+                            senha = usuario.senha
+                        )
+                        Spacer(modifier = Modifier.height(8.dp))
+                    }
                 }
             }
         }
-    }
-}
-@Composable
-fun UsuarioItem(usuario: Usuario) {
-    Column(modifier = Modifier.padding(8.dp)) {
-        Text(text = "Nome: ${usuario.nome}")
-        Text(text = "Email: ${usuario.email}")
     }
 }
 
