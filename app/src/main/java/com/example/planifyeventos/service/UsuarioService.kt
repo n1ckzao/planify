@@ -15,7 +15,7 @@ interface UsuarioService {
     fun inserirUsuario(@Body usuario: Usuario): Call<Usuario>
 
     @GET("usuario")
-    fun listarUsuarios(): Call<Result>
+    fun listarUsuarios(): Call<Usuario>
 
     @GET("usuario/{id}")
     fun listarUsuarioPorId(@Path("id") id:Int): Call<Usuario>

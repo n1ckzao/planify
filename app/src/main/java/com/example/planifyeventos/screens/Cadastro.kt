@@ -192,6 +192,22 @@ fun Cadastro(navegacao:NavHostController) {
                                 imeAction = ImeAction.Done
                             )
                         )
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Text(
+                            text = "URL da foto de perfil:",
+                            fontSize = 15.sp
+                        )
+                        OutlinedTextField(
+                            value = fotoPerfil.value,
+                            onValueChange = { fotoPerfil.value = it },
+                            shape = RoundedCornerShape(23.dp),
+                            modifier = Modifier
+                                .height(45.dp),
+                            keyboardOptions = KeyboardOptions(
+                                keyboardType = KeyboardType.Text,
+                                imeAction = ImeAction.Done
+                            )
+                        )
                     }
                     Column (
                         modifier = Modifier
