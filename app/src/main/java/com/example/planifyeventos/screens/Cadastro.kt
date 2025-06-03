@@ -44,6 +44,7 @@ import androidx.navigation.compose.rememberNavController
 import com.example.planifyeventos.R
 import com.example.planifyeventos.model.Usuario
 import com.example.planifyeventos.service.RetrofitFactory
+import com.example.planifyeventos.utils.SharedPrefHelper
 
 
 @Composable
@@ -56,6 +57,7 @@ fun Cadastro(navegacao:NavHostController) {
     val confirmarSenha = remember { mutableStateOf("") }
     val fotoPerfil = remember { mutableStateOf("") }
     val palavraChave = remember { mutableStateOf("") }
+    val context = LocalContext.current
 
     Box(
         modifier = Modifier
@@ -103,10 +105,10 @@ fun Cadastro(navegacao:NavHostController) {
                         OutlinedTextField(
                             value = nome.value,
                             onValueChange = { nome.value = it },
-                            shape = RoundedCornerShape(23.dp),
+                            shape = RoundedCornerShape(33.dp),
                             singleLine = true,
                             modifier = Modifier
-                                .height(45.dp),
+                                .height(50.dp),
                             keyboardOptions = KeyboardOptions(
                                 keyboardType = KeyboardType.Text,
                                 imeAction = ImeAction.Next
@@ -120,10 +122,10 @@ fun Cadastro(navegacao:NavHostController) {
                         OutlinedTextField(
                             value = dataNascimento.value,
                             onValueChange = { dataNascimento.value = it },
-                            shape = RoundedCornerShape(23.dp),
+                            shape = RoundedCornerShape(33.dp),
                             singleLine = true,
                             modifier = Modifier
-                                .height(45.dp)
+                                .height(50.dp)
                                 .width(150.dp),
                             keyboardOptions = KeyboardOptions(
                                 keyboardType = KeyboardType.Number,
@@ -138,10 +140,10 @@ fun Cadastro(navegacao:NavHostController) {
                         OutlinedTextField(
                             value = email.value,
                             onValueChange = { email.value = it },
-                            shape = RoundedCornerShape(23.dp),
+                            shape = RoundedCornerShape(33.dp),
                             singleLine = true,
                             modifier = Modifier
-                                .height(45.dp),
+                                .height(50.dp),
                             keyboardOptions = KeyboardOptions(
                                 keyboardType = KeyboardType.Email,
                                 imeAction = ImeAction.Next
@@ -155,10 +157,10 @@ fun Cadastro(navegacao:NavHostController) {
                         OutlinedTextField(
                             value = senha.value,
                             onValueChange = { senha.value = it },
-                            shape = RoundedCornerShape(23.dp),
+                            shape = RoundedCornerShape(33.dp),
                             singleLine = true,
                             modifier = Modifier
-                                .height(45.dp),
+                                .height(50.dp),
                             keyboardOptions = KeyboardOptions(
                                 keyboardType = KeyboardType.Password,
                                 imeAction = ImeAction.Next
@@ -172,10 +174,10 @@ fun Cadastro(navegacao:NavHostController) {
                         OutlinedTextField(
                             value = confirmarSenha.value,
                             onValueChange = {confirmarSenha.value = it},
-                            shape = RoundedCornerShape(23.dp),
+                            shape = RoundedCornerShape(33.dp),
                             singleLine = true,
                             modifier = Modifier
-                                .height(45.dp),
+                                .height(50.dp),
                             keyboardOptions = KeyboardOptions(
                                 keyboardType = KeyboardType.Password,
                                 imeAction = ImeAction.Next
@@ -189,10 +191,10 @@ fun Cadastro(navegacao:NavHostController) {
                         OutlinedTextField(
                             value = palavraChave.value,
                             onValueChange = { palavraChave.value = it },
-                            shape = RoundedCornerShape(23.dp),
+                            shape = RoundedCornerShape(33.dp),
                             singleLine = true,
                             modifier = Modifier
-                                .height(45.dp),
+                                .height(50.dp),
                             keyboardOptions = KeyboardOptions(
                                 keyboardType = KeyboardType.Text,
                                 imeAction = ImeAction.Done
@@ -206,9 +208,10 @@ fun Cadastro(navegacao:NavHostController) {
                         OutlinedTextField(
                             value = fotoPerfil.value,
                             onValueChange = { fotoPerfil.value = it },
-                            shape = RoundedCornerShape(23.dp),
+                            shape = RoundedCornerShape(33.dp),
+                            singleLine = true,
                             modifier = Modifier
-                                .height(45.dp),
+                                .height(50.dp),
                             keyboardOptions = KeyboardOptions(
                                 keyboardType = KeyboardType.Text,
                                 imeAction = ImeAction.Done
@@ -237,10 +240,13 @@ fun Cadastro(navegacao:NavHostController) {
                                 call.enqueue(object : retrofit2.Callback<Usuario> {
                                     override fun onResponse(
                                         call: retrofit2.Call<Usuario>,
-                                        response: retrofit2.Response<Usuario>
+                                        response: retrofit2.Response<Usuario>,
+
                                     ) {
                                         if (response.isSuccessful) {
                                             Log.i("API", "Usuário cadastrado com sucesso: ${response.body()}")
+                                            SharedPrefHelper.salvarEmail(context, email.value)
+                                            navegacao.navigate(route = "perfil")
                                         } else {
                                             Log.e("API", "Erro ao cadastrar: ${response.code()}")
                                         }
@@ -250,7 +256,6 @@ fun Cadastro(navegacao:NavHostController) {
                                         Log.e("API", "Falha na requisição: ${t.message}")
                                     }
                                 })
-                                navegacao.navigate(route = "perfil")
                             },
 
                             modifier = Modifier

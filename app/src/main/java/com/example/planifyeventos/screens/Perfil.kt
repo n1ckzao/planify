@@ -1,6 +1,7 @@
 package com.example.planifyeventos.screens
 
 import android.util.Log
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -30,6 +31,8 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
+import com.example.planifyeventos.R
 import com.example.planifyeventos.utils.SharedPrefHelper
 
 @Composable
@@ -96,8 +99,14 @@ fun Perfil(navegacao: NavHostController) {
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(bottom = 16.dp),
-                        horizontalArrangement = Arrangement.End
+                        horizontalArrangement = Arrangement.SpaceBetween
                     ) {
+                        Image(
+                            painter = painterResource(R.drawable.logo),
+                            contentDescription = "",
+                            modifier = Modifier
+                                .width(100.dp)
+                        )
                         Button(
                             onClick = {
                                 SharedPrefHelper.deslogar(context)
@@ -109,8 +118,6 @@ fun Perfil(navegacao: NavHostController) {
                             Text("Sair")
                         }
                     }
-
-                    // Exibe apenas o usuário logado
                     UsuarioCard(
                         nome = usuarioLogado.value!!.nome,
                         email = usuarioLogado.value!!.email,

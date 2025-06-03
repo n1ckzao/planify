@@ -37,7 +37,7 @@ fun UsuarioCard(
         modifier = Modifier
             .padding(8.dp)
             .fillMaxWidth()
-            .height(300.dp),
+            .height(600.dp),
         colors = CardDefaults.cardColors(containerColor = Color(0xaaffffff)),
         border = BorderStroke(
             width = 16.dp,
@@ -63,24 +63,29 @@ fun UsuarioCard(
                     contentScale = ContentScale.Crop
                 )
             }
-            Spacer(modifier = Modifier.width(16.dp))
+            Spacer(modifier = Modifier.height(36.dp))
             Column {
+                Text(text = "Nome de usuário:")
                 Text(text = nome)
                 Spacer(modifier = Modifier.height(8.dp))
                 HorizontalDivider(modifier = Modifier.width(300.dp), color = Color.Black)
                 Spacer(modifier = Modifier.height(8.dp))
+                Text(text = "Meu email:")
                 Text(text = email)
                 Spacer(modifier = Modifier.height(8.dp))
                 HorizontalDivider(modifier = Modifier.width(300.dp), color = Color.Black)
                 Spacer(modifier = Modifier.height(8.dp))
-                Text(text = "Data: ${data_nascimento.formatarData()}")
+                Text(text = "Data de nascimento:")
+                Text(text = data_nascimento.formatarData())
                 Spacer(modifier = Modifier.height(8.dp))
                 HorizontalDivider(modifier = Modifier.width(300.dp), color = Color.Black)
                 Spacer(modifier = Modifier.height(8.dp))
+                Text(text = "Minha palavra chave:")
                 Text(text = palavra_chave)
                 Spacer(modifier = Modifier.height(8.dp))
                 HorizontalDivider(modifier = Modifier.width(300.dp), color = Color.Black)
                 Spacer(modifier = Modifier.height(8.dp))
+                Text(text = "Minha senha:")
                 Text(text = senha)
             }
         }

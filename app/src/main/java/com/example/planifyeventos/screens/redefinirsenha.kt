@@ -1,5 +1,7 @@
 package com.example.planifyeventos.screens
 
+
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -11,30 +13,30 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.TextFieldValue
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.rememberNavController
 import com.example.planifyeventos.R
-import com.example.planifyeventos.model.Result
+import com.example.planifyeventos.model.Usuario
 import com.example.planifyeventos.service.RetrofitFactory
+import com.example.planifyeventos.utils.SharedPrefHelper
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
 @Composable
-fun RecuperarSenha(navegacao: NavHostController?) {
-    val email = remember { mutableStateOf(TextFieldValue("")) }
-    val palavraChave = remember { mutableStateOf(TextFieldValue("")) }
+fun RedefinirSenhaScreen(navegacao: NavHostController?, idUsuario: Int) {
+    var novaSenha by remember { mutableStateOf("") }
+    var confirmarSenha by remember { mutableStateOf("") }
     val mensagem = remember { mutableStateOf<String?>(null) }
     val loading = remember { mutableStateOf(false) }
-    val context = LocalContext.current
 
     Box(
         modifier = Modifier
@@ -52,36 +54,39 @@ fun RecuperarSenha(navegacao: NavHostController?) {
                 )
                 .border(
                     15.dp,
-                    Color(0xFF037EF7),
+                    Color(0xFF007AFF),
                     shape = RoundedCornerShape(40.dp)
                 )
                 .padding(32.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
+            // Logo
             Image(
-                painter = painterResource(R.drawable.logo),
+                painter = painterResource(id = R.drawable.logo),
                 contentDescription = "Logo",
-                modifier = Modifier.width(230.dp).height(90.dp)
+                modifier = Modifier.size(100.dp),
+                contentScale = ContentScale.Fit
             )
 
             Spacer(modifier = Modifier.height(24.dp))
 
             Text(
-                text = "Esqueceu a senha?",
+                text = "Redefinir Senha:",
                 fontSize = 24.sp,
                 fontWeight = FontWeight.Bold,
-                color = Color(0xFF037EF7)
+                color = Color(0xFF007AFF),
+                textAlign = TextAlign.Center
             )
 
             Spacer(modifier = Modifier.height(32.dp))
 
-            // Email field
-            Text(text = "Digite seu email:", fontSize = 16.sp)
+            Text("Nova Senha:", fontSize = 16.sp)
             Spacer(modifier = Modifier.height(8.dp))
+
             OutlinedTextField(
-                value = email.value,
-                onValueChange = { email.value = it },
-                placeholder = { Text("example@gmail.com") },
+                value = novaSenha,
+                onValueChange = { novaSenha = it },
+                placeholder = { Text("Digite sua nova senha") },
                 shape = RoundedCornerShape(30.dp),
                 singleLine = true,
                 modifier = Modifier
@@ -92,13 +97,14 @@ fun RecuperarSenha(navegacao: NavHostController?) {
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Palavra-chave field
-            Text(text = "Palavra-chave:", fontSize = 16.sp)
+            // Confirmar Senha
+            Text("Confirmar Senha:", fontSize = 16.sp)
             Spacer(modifier = Modifier.height(8.dp))
+
             OutlinedTextField(
-                value = palavraChave.value,
-                onValueChange = { palavraChave.value = it },
-                placeholder = { Text("exemplo123") },
+                value = confirmarSenha,
+                onValueChange = { confirmarSenha = it },
+                placeholder = { Text("Confirme sua senha") },
                 visualTransformation = PasswordVisualTransformation(),
                 shape = RoundedCornerShape(30.dp),
                 singleLine = true,
@@ -110,40 +116,34 @@ fun RecuperarSenha(navegacao: NavHostController?) {
 
             Spacer(modifier = Modifier.height(40.dp))
 
+            // Botão para Atualizar Senha
             Button(
                 onClick = {
-                    if (email.value.text.isBlank() || palavraChave.value.text.isBlank()) {
-                        mensagem.value = "Por favor, preencha todos os campos"
+                    if (novaSenha != confirmarSenha) {
+                        mensagem.value = "As senhas não correspondem."
                         return@Button
                     }
+
+                    if (novaSenha.isBlank()) {
+                        mensagem.value = "Por favor, insira uma nova senha."
+                        return@Button
+                    }
+
                     loading.value = true
                     mensagem.value = null
 
-                    val call = RetrofitFactory().getUsuarioService().listarUsuarios()
-                    call.enqueue(object : Callback<Result> {
-                        override fun onResponse(call: Call<Result>, response: Response<Result>) {
-                            loading.value = false
-                            if (response.isSuccessful) {
-                                val usuarios = response.body()?.usuario
-                                val usuarioEncontrado = usuarios?.find {
-                                    it.email == email.value.text && it.palavra_chave == palavraChave.value.text
-                                }
-                                if (usuarioEncontrado != null) {
-                                    val idUsuario = usuarioEncontrado.id_usuario  // pega o id do usuário
-                                    navegacao!!.navigate("redefinir_senha/$idUsuario")
-                                } else {
-                                    mensagem.value = "Email ou palavra-chave incorretos"
-                                }
-                            } else {
-                                mensagem.value = "Erro no servidor: ${response.code()}"
-                            }
+                    val usuarioService = RetrofitFactory().getUsuarioService()
+
+                    usuarioService.listarUsuarioPorId(idUsuario).enqueue(object  : Callback<Usuario> {
+                        override fun onResponse(p0: Call<Usuario>, p1: Response<Usuario>) {
+
                         }
 
-                        override fun onFailure(call: Call<Result>, t: Throwable) {
-                            loading.value = false
-                            mensagem.value = "Falha na conexão: ${t.message}"
+                        override fun onFailure(p0: Call<Usuario>, p1: Throwable) {
                         }
+
                     })
+
                 },
                 shape = RoundedCornerShape(50.dp),
                 modifier = Modifier
@@ -151,32 +151,27 @@ fun RecuperarSenha(navegacao: NavHostController?) {
                     .height(50.dp)
                     .shadow(8.dp, RoundedCornerShape(50.dp)),
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = Color(0xFF037EF7),
+                    containerColor = Color(0xFF007AFF),
                     contentColor = Color.White
                 )
             ) {
                 Text(
-                    text = if (loading.value) "Carregando..." else "Recuperar Senha",
+                    text = if (loading.value) "Carregando..." else "Alterar Senha",
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Bold
                 )
             }
+
+            // Mostrar mensagens de erro ou sucesso
             mensagem.value?.let {
                 Spacer(modifier = Modifier.height(20.dp))
                 Text(
                     text = it,
-                    color = if (it.startsWith("Sua senha é")) Color(0xFF037EF7) else Color.Red,
+                    color = if (it.startsWith("Senha")) Color(0xFF037EF7) else Color.Red,
                     fontWeight = FontWeight.Medium,
                     fontSize = 16.sp
                 )
             }
         }
     }
-}
-
-@Preview
-@Composable
-fun RecuperarSenhaPreview() {
-    val fakeNavController = rememberNavController()
-    RecuperarSenha(navegacao = fakeNavController)
 }

@@ -12,9 +12,11 @@ object SharedPrefHelper {
     }
 
     fun salvarEmail(context: Context, email: String) {
-        val editor = getPreferences(context).edit()
-        editor.putString(KEY_EMAIL, email)
-        editor.apply()
+        val sharedPref: SharedPreferences = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
+        with(sharedPref.edit()) {
+            putString(KEY_EMAIL, email)
+            apply()
+        }
     }
 
     fun obterEmail(context: Context): String? {
@@ -22,12 +24,15 @@ object SharedPrefHelper {
         return prefs.getString(KEY_EMAIL, null)
     }
     fun recuperarEmail(context: Context): String? {
-        return getPreferences(context).getString(KEY_EMAIL, null)
+        val sharedPref: SharedPreferences = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
+        return sharedPref.getString(KEY_EMAIL, null)
     }
 
     fun deslogar(context: Context) {
-        val editor = getPreferences(context).edit()
-        editor.remove(KEY_EMAIL)
-        editor.apply()
+        val sharedPref: SharedPreferences = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
+        with(sharedPref.edit()) {
+            remove(KEY_EMAIL)
+            apply()
+        }
     }
 }
