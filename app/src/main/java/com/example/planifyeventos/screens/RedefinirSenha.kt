@@ -1,7 +1,6 @@
 package com.example.planifyeventos.screens
 
 
-import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -17,22 +16,24 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
-import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 import com.example.planifyeventos.R
+import com.example.planifyeventos.model.ResultSenha
+import com.example.planifyeventos.model.SenhaRequest
+
 import com.example.planifyeventos.model.Usuario
 import com.example.planifyeventos.service.RetrofitFactory
-import com.example.planifyeventos.utils.SharedPrefHelper
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
 @Composable
-fun RedefinirSenhaScreen(navegacao: NavHostController?, idUsuario: Int) {
+fun RedefinirSenhaScreen(navegacao: NavHostController, idUsuario: Int) {
     var novaSenha by remember { mutableStateOf("") }
     var confirmarSenha by remember { mutableStateOf("") }
     val mensagem = remember { mutableStateOf<String?>(null) }
@@ -133,17 +134,24 @@ fun RedefinirSenhaScreen(navegacao: NavHostController?, idUsuario: Int) {
                     mensagem.value = null
 
                     val usuarioService = RetrofitFactory().getUsuarioService()
+                    val senhaRequest = SenhaRequest(senha = novaSenha)
 
-                    usuarioService.listarUsuarioPorId(idUsuario).enqueue(object  : Callback<Usuario> {
-                        override fun onResponse(p0: Call<Usuario>, p1: Response<Usuario>) {
-
+                    // Faz a chamada PUT para atualizar a senha
+                    usuarioService.atualizarSenha(idUsuario, senhaRequest).enqueue(object : Callback<ResultSenha> {
+                        override fun onResponse(call: Call<ResultSenha>, response: Response<ResultSenha>) {
+                            loading.value = false
+                            if (response.isSuccessful) {
+                                mensagem.value = "Senha atualizada com sucesso!"
+                            } else {
+                                mensagem.value = "Erro ao atualizar senha: ${response.code()}"
+                            }
                         }
 
-                        override fun onFailure(p0: Call<Usuario>, p1: Throwable) {
+                        override fun onFailure(call: Call<ResultSenha>, t: Throwable) {
+                            loading.value = false
+                            mensagem.value = "Erro de rede: ${t.localizedMessage}"
                         }
-
                     })
-
                 },
                 shape = RoundedCornerShape(50.dp),
                 modifier = Modifier
@@ -174,4 +182,11 @@ fun RedefinirSenhaScreen(navegacao: NavHostController?, idUsuario: Int) {
             }
         }
     }
+}
+
+@Preview
+@Composable
+private fun RedefinirSenhaPreview() {
+    val NavController = rememberNavController()
+    RedefinirSenhaScreen(navegacao = NavController, 1)
 }
