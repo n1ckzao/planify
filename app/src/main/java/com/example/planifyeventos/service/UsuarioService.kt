@@ -1,5 +1,6 @@
 package com.example.planifyeventos.service
 
+import com.example.planifyeventos.model.Evento
 import com.example.planifyeventos.model.Result
 import com.example.planifyeventos.model.ResultSenha
 import com.example.planifyeventos.model.SenhaRequest
@@ -32,4 +33,10 @@ interface UsuarioService {
         @Path("id") id: Int,
         @Body senhaRequest: SenhaRequest
     ): Call<ResultSenha>
+}
+
+interface EventoService {
+    @POST("evento")
+    @Headers("Content-Type: application/json")
+    fun inserirEvento(@Body evento: Evento): Call<Evento>
 }

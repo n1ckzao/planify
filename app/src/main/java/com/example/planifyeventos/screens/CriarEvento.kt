@@ -1,5 +1,6 @@
 package com.example.planifyeventos.screens
 
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
@@ -14,33 +15,30 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.planifyeventos.R
-
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowDropDown
-
-
-data class Categoria(
-    val id: Int,
-    val nome: String
-)
+import com.example.planifyeventos.model.Evento
+import com.example.planifyeventos.service.RetrofitFactory
+import com.example.planifyeventos.utils.SharedPrefHelper
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CriarEvento(navegacao: NavHostController) {
+fun CriarEvento(navegacao: NavHostController, idUsuario: Int) {
+
     val context = LocalContext.current
 
-    var nomeEvento by remember { mutableStateOf(TextFieldValue("")) }
+    var urlImagem by remember { mutableStateOf(TextFieldValue("")) }
+    var titulo by remember { mutableStateOf(TextFieldValue("")) }
     var dataEvento by remember { mutableStateOf(TextFieldValue("")) }
     var horarioEvento by remember { mutableStateOf(TextFieldValue("")) }
     var localEvento by remember { mutableStateOf(TextFieldValue("")) }
-    var limite by remember { mutableStateOf("150") }
-    var organizador by remember { mutableStateOf(TextFieldValue("")) }
+    var limite by remember { mutableStateOf("") }
     var categoria by remember { mutableStateOf("") }
+    var estado by remember { mutableStateOf("") }
     var descricao by remember { mutableStateOf(TextFieldValue("")) }
     var valor by remember { mutableStateOf(TextFieldValue("")) }
 
@@ -52,29 +50,19 @@ fun CriarEvento(navegacao: NavHostController) {
         verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-
-        // Imagem de destaque
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(180.dp)
-                .background(Color.LightGray, RoundedCornerShape(12.dp))
-        ) {
-            Icon(
-                painter = painterResource(id = R.drawable.ic_launcher_foreground),
-                contentDescription = null,
-                modifier = Modifier
-                    .align(Alignment.Center)
-                    .size(50.dp),
-                tint = Color.White
-            )
-        }
+        OutlinedTextField(
+            value = urlImagem,
+            onValueChange = { urlImagem = it },
+            label = { Text("URL da Imagem do Evento") },
+            modifier = Modifier.fillMaxWidth(),
+            shape = RoundedCornerShape(12.dp)
+        )
 
         Spacer(modifier = Modifier.height(16.dp))
 
         OutlinedTextField(
-            value = nomeEvento,
-            onValueChange = { nomeEvento = it },
+            value = titulo,
+            onValueChange = { titulo = it },
             label = { Text("Nome do Evento") },
             modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(12.dp)
@@ -127,35 +115,29 @@ fun CriarEvento(navegacao: NavHostController) {
         Spacer(modifier = Modifier.height(8.dp))
 
         OutlinedTextField(
-            value = organizador,
-            onValueChange = { organizador = it },
-            label = { Text("Nome do criador do evento (conta)") },
+            value = categoria,
+            onValueChange = { categoria = it },
+            label = { Text("Categoria") },
             modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(12.dp)
         )
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        ExposedDropdownMenuBox(
-            expanded = false,
-            onExpandedChange = {}
-        ) {
-            OutlinedTextField(
-                value = categoria,
-                onValueChange = { categoria = it },
-                label = { Text("Categoria") },
-                modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(12.dp),
-                trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = false) }
-            )
-        }
+        OutlinedTextField(
+            value = estado,
+            onValueChange = { estado = it },
+            label = { Text("Estado") },
+            modifier = Modifier.fillMaxWidth(),
+            shape = RoundedCornerShape(12.dp)
+        )
 
         Spacer(modifier = Modifier.height(8.dp))
 
         OutlinedTextField(
             value = descricao,
             onValueChange = { descricao = it },
-            label = { Text("Descrição do evento") },
+            label = { Text("Descrição do evento...") },
             modifier = Modifier
                 .fillMaxWidth()
                 .height(100.dp),
@@ -167,7 +149,7 @@ fun CriarEvento(navegacao: NavHostController) {
         OutlinedTextField(
             value = valor,
             onValueChange = { valor = it },
-            label = { Text("Valor") },
+            label = { Text("Valor do evento") },
             modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(12.dp)
         )
@@ -176,8 +158,38 @@ fun CriarEvento(navegacao: NavHostController) {
 
         Button(
             onClick = {
-                // Implementar lógica de cadastro
-                Toast.makeText(context, "Evento cadastrado!", Toast.LENGTH_SHORT).show()
+
+                val evento = Evento(
+                    titulo = titulo.text,
+                    descricao = descricao.text,
+                    data_evento = dataEvento.text,
+                    horario = horarioEvento.text,
+                    local = localEvento.text,
+                    imagem = urlImagem.text,
+                    limite_participante = limite.toIntOrNull() ?: 0,
+                    valor_ingresso = valor.text,
+                    id_usuario = idUsuario
+                )
+
+                val call = RetrofitFactory().getEventoService().inserirEvento(evento)
+
+                call.enqueue(object : Callback<Evento> {
+                    override fun onResponse(call: Call<Evento>, response: Response<Evento>) {
+                        if (response.isSuccessful) {
+                            Log.i("API", "Evento cadastrado com sucesso: ${response.body()}")
+                            Toast.makeText(context, "Evento cadastrado com sucesso!", Toast.LENGTH_LONG).show()
+                            navegacao.navigate("perfil")
+                        } else {
+                            Log.e("API", "Erro ao cadastrar: ${response.code()}")
+                            Toast.makeText(context, "Erro ao cadastrar evento.", Toast.LENGTH_LONG).show()
+                        }
+                    }
+
+                    override fun onFailure(call: Call<Evento>, t: Throwable) {
+                        Log.e("API", "Falha na requisição: ${t.message}")
+                        Toast.makeText(context, "Falha na requisição.", Toast.LENGTH_LONG).show()
+                    }
+                })
             },
             modifier = Modifier
                 .fillMaxWidth()
@@ -185,7 +197,7 @@ fun CriarEvento(navegacao: NavHostController) {
             shape = RoundedCornerShape(30.dp),
             colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF007BFF))
         ) {
-            Text("Cadastrar", fontSize = 18.sp, color = Color.White)
+            Text("Cadastrar evento", fontSize = 18.sp, color = Color.White)
         }
     }
 }
@@ -193,6 +205,6 @@ fun CriarEvento(navegacao: NavHostController) {
 @Preview
 @Composable
 private fun CriarEventoPreview() {
-    val NavController = rememberNavController()
-    CriarEvento(navegacao = NavController)
+    val navController = rememberNavController()
+    CriarEvento(navegacao = navController, idUsuario = 1)
 }

@@ -6,9 +6,7 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
 class RetrofitFactory {
-//    private val BASE_URL = "http://10.0.3.3:3030/v1/planify/"
    private val BASE_URL = "http://10.107.144.18:3030/v1/planify/"
-    //http://localhost:3030/v1/planify
 
     private val loggingInterceptor = HttpLoggingInterceptor().apply {
         level = HttpLoggingInterceptor.Level.BODY
@@ -26,5 +24,8 @@ class RetrofitFactory {
 
     fun getUsuarioService(): UsuarioService {
         return RETROFIT_FACTORY.create(UsuarioService::class.java)
+    }
+    fun getEventoService(): EventoService{
+        return RETROFIT_FACTORY.create(EventoService::class.java)
     }
 }
