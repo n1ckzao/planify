@@ -18,6 +18,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.planifyeventos.exposed.Categoria
 import com.example.planifyeventos.model.Evento
 import com.example.planifyeventos.service.RetrofitFactory
 import com.example.planifyeventos.utils.SharedPrefHelper
@@ -41,6 +42,16 @@ fun CriarEvento(navegacao: NavHostController, idUsuario: Int) {
     var estado by remember { mutableStateOf("") }
     var descricao by remember { mutableStateOf(TextFieldValue("")) }
     var valor by remember { mutableStateOf(TextFieldValue("")) }
+
+    val categorias = remember {
+        listOf(
+            Categoria(id = 1, nome = "Eletrônicos"),
+            Categoria(id = 2, nome = "Roupas"),
+            Categoria(id = 3, nome = "Alimentos")
+        )
+    }
+
+    var categoriaSelecionadaId by remember { mutableStateOf<Int?>(null) }
 
     Column(
         modifier = Modifier

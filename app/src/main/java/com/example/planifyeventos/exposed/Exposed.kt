@@ -6,6 +6,7 @@ import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 
 data class Categoria(
@@ -102,4 +103,10 @@ fun TelaExemplo() {
             )
         }
     }
+}
+
+@Preview
+@Composable
+private fun TelaExemploPreview() {
+    TelaExemplo()
 }
