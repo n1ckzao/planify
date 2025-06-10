@@ -1,6 +1,6 @@
 package com.example.planifyeventos.screens
 
-
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -17,23 +17,20 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.rememberNavController
 import com.example.planifyeventos.R
-import com.example.planifyeventos.model.ResultSenha
-import com.example.planifyeventos.model.SenhaRequest
-
-import com.example.planifyeventos.model.Usuario
 import com.example.planifyeventos.service.RetrofitFactory
+import okhttp3.MediaType.Companion.toMediaType
+import okhttp3.RequestBody.Companion.toRequestBody
+import org.json.JSONObject
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
 @Composable
-fun RedefinirSenhaScreen(navegacao: NavHostController, idUsuario: Int) {
+fun RedefinirSenhaScreen(navegacao: NavHostController?, idUsuario: Int) {
     var novaSenha by remember { mutableStateOf("") }
     var confirmarSenha by remember { mutableStateOf("") }
     val mensagem = remember { mutableStateOf<String?>(null) }
@@ -49,19 +46,11 @@ fun RedefinirSenhaScreen(navegacao: NavHostController, idUsuario: Int) {
             modifier = Modifier
                 .padding(24.dp)
                 .fillMaxWidth()
-                .background(
-                    Color.White,
-                    shape = RoundedCornerShape(40.dp)
-                )
-                .border(
-                    15.dp,
-                    Color(0xFF007AFF),
-                    shape = RoundedCornerShape(40.dp)
-                )
+                .background(Color.White, shape = RoundedCornerShape(40.dp))
+                .border(15.dp, Color(0xFF007AFF), shape = RoundedCornerShape(40.dp))
                 .padding(32.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // Logo
             Image(
                 painter = painterResource(id = R.drawable.logo),
                 contentDescription = "Logo",
@@ -98,7 +87,6 @@ fun RedefinirSenhaScreen(navegacao: NavHostController, idUsuario: Int) {
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Confirmar Senha
             Text("Confirmar Senha:", fontSize = 16.sp)
             Spacer(modifier = Modifier.height(8.dp))
 
@@ -117,7 +105,6 @@ fun RedefinirSenhaScreen(navegacao: NavHostController, idUsuario: Int) {
 
             Spacer(modifier = Modifier.height(40.dp))
 
-            // Botão para Atualizar Senha
             Button(
                 onClick = {
                     if (novaSenha != confirmarSenha) {
@@ -134,24 +121,31 @@ fun RedefinirSenhaScreen(navegacao: NavHostController, idUsuario: Int) {
                     mensagem.value = null
 
                     val usuarioService = RetrofitFactory().getUsuarioService()
-                    val senhaRequest = SenhaRequest(senha = novaSenha)
 
-                    // Faz a chamada PUT para atualizar a senha
-                    usuarioService.atualizarSenha(idUsuario, senhaRequest).enqueue(object : Callback<ResultSenha> {
-                        override fun onResponse(call: Call<ResultSenha>, response: Response<ResultSenha>) {
-                            loading.value = false
-                            if (response.isSuccessful) {
-                                mensagem.value = "Senha atualizada com sucesso!"
-                            } else {
-                                mensagem.value = "Erro ao atualizar senha: ${response.code()}"
+                    val json = JSONObject().apply {
+                        put("senha", novaSenha)
+                    }
+
+                    val body = json.toString()
+                        .toRequestBody("application/json".toMediaType())
+
+                    usuarioService.redefinirSenhaRaw(idUsuario, body)
+                        .enqueue(object : Callback<Void> {
+                            override fun onResponse(call: Call<Void>, response: Response<Void>) {
+                                loading.value = false
+                                if (response.isSuccessful) {
+                                    mensagem.value = "Senha redefinida com sucesso!"
+                                    navegacao?.navigate("login")
+                                } else {
+                                    mensagem.value = "Erro ao redefinir senha. Código: ${response.code()}"
+                                }
                             }
-                        }
 
-                        override fun onFailure(call: Call<ResultSenha>, t: Throwable) {
-                            loading.value = false
-                            mensagem.value = "Erro de rede: ${t.localizedMessage}"
-                        }
-                    })
+                            override fun onFailure(call: Call<Void>, t: Throwable) {
+                                loading.value = false
+                                mensagem.value = "Erro de rede: ${t.message}"
+                            }
+                        })
                 },
                 shape = RoundedCornerShape(50.dp),
                 modifier = Modifier
@@ -170,7 +164,6 @@ fun RedefinirSenhaScreen(navegacao: NavHostController, idUsuario: Int) {
                 )
             }
 
-            // Mostrar mensagens de erro ou sucesso
             mensagem.value?.let {
                 Spacer(modifier = Modifier.height(20.dp))
                 Text(
@@ -182,11 +175,4 @@ fun RedefinirSenhaScreen(navegacao: NavHostController, idUsuario: Int) {
             }
         }
     }
-}
-
-@Preview
-@Composable
-private fun RedefinirSenhaPreview() {
-    val NavController = rememberNavController()
-    RedefinirSenhaScreen(navegacao = NavController, 1)
 }

@@ -29,14 +29,8 @@ interface UsuarioService {
 
     @PUT("usuario/senha/{id}")
     @Headers("Content-Type: application/json")
-    fun atualizarSenha(
+    fun redefinirSenhaRaw(
         @Path("id") id: Int,
-        @Body senhaRequest: SenhaRequest
-    ): Call<ResultSenha>
-}
-
-interface EventoService {
-    @POST("evento")
-    @Headers("Content-Type: application/json")
-    fun inserirEvento(@Body evento: Evento): Call<Evento>
+        @Body body: okhttp3.RequestBody
+    ): Call<Void>
 }

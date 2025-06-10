@@ -40,6 +40,12 @@ import androidx.navigation.NavHostController
 import com.example.planifyeventos.R
 import com.example.planifyeventos.service.RetrofitFactory
 import com.example.planifyeventos.utils.SharedPrefHelper
+import retrofit2.Callback
+import com.example.planifyeventos.model.Result
+import retrofit2.Call
+import retrofit2.Response
+
+
 
 @Composable
 fun Login(navegacao: NavHostController?) {
@@ -124,33 +130,34 @@ fun Login(navegacao: NavHostController?) {
                                     return@Button
                                 }
 
-                                val call = RetrofitFactory().getUsuarioService().listarUsuarios()
-                                call.enqueue(object : retrofit2.Callback<com.example.planifyeventos.model.Result> {
-                                    override fun onResponse(
-                                        call: retrofit2.Call<com.example.planifyeventos.model.Result>,
-                                        response: retrofit2.Response<com.example.planifyeventos.model.Result>
-                                    ) {
+                                val usuarioService = RetrofitFactory().getUsuarioService()
+
+                                usuarioService.listarUsuarios().enqueue(object : Callback<Result> {
+                                    override fun onResponse(call: Call<Result>, response: Response<Result>) {
                                         if (response.isSuccessful) {
-                                            val usuario = response.body()?.usuario?.find {
+                                            val usuarios = response.body()?.usuario ?: emptyList()
+                                            val usuarioEncontrado = usuarios.find {
                                                 it.email == email.value && it.senha == senha.value
                                             }
-                                            if (usuario != null) {
-                                                SharedPrefHelper.salvarEmail(context, usuario.email)
-                                                navegacao?.navigate("perfil") {
-                                                    popUpTo("login") { inclusive = true }
-                                                }
+
+                                            if (usuarioEncontrado != null) {
+                                                SharedPrefHelper.salvarEmail(context, usuarioEncontrado.email)
+                                                SharedPrefHelper.salvarIdUsuario(context, usuarioEncontrado.id_usuario) // Agora funciona!
+                                                navegacao?.navigate("home")
                                             } else {
                                                 erro.value = "Email ou senha incorretos"
                                             }
                                         } else {
-                                            erro.value = "Erro: ${response.code()}"
+                                            erro.value = "Erro ao buscar usuários"
                                         }
                                     }
 
-                                    override fun onFailure(call: retrofit2.Call<com.example.planifyeventos.model.Result>, t: Throwable) {
-                                        erro.value = "Falha na conexão: ${t.message}"
+                                    override fun onFailure(call: Call<Result>, t: Throwable) {
+                                        erro.value = "Erro de rede: ${t.message}"
                                     }
                                 })
+
+
                             },
                             shape = RoundedCornerShape(48.dp),
                             modifier = Modifier

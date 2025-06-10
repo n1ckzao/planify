@@ -1,4 +1,5 @@
 package com.example.planifyeventos.screens
+import com.example.planifyeventos.service.RetrofitEmailFactory
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -11,30 +12,27 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.TextFieldValue
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.rememberNavController
 import com.example.planifyeventos.R
-import com.example.planifyeventos.model.Result
-import com.example.planifyeventos.service.RetrofitFactory
+import com.example.planifyeventos.model.EmailRequest
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import android.net.Uri
+import android.util.Log
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.compose.rememberNavController
 
 @Composable
 fun RecuperarSenha(navegacao: NavHostController?) {
     val email = remember { mutableStateOf(TextFieldValue("")) }
-    val palavraChave = remember { mutableStateOf(TextFieldValue("")) }
     val mensagem = remember { mutableStateOf<String?>(null) }
     val loading = remember { mutableStateOf(false) }
-    val context = LocalContext.current
 
     Box(
         modifier = Modifier
@@ -46,133 +44,109 @@ fun RecuperarSenha(navegacao: NavHostController?) {
             modifier = Modifier
                 .padding(24.dp)
                 .fillMaxWidth()
-                .background(
-                    Color.White,
-                    shape = RoundedCornerShape(40.dp)
-                )
-                .border(
-                    15.dp,
-                    Color(0xFF037EF7),
-                    shape = RoundedCornerShape(40.dp)
-                )
+                .background(Color.White, shape = RoundedCornerShape(40.dp))
+                .border(15.dp, Color(0xFF037EF7), shape = RoundedCornerShape(40.dp))
                 .padding(32.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Image(
-                painter = painterResource(R.drawable.logo),
-                contentDescription = "Logo",
-                modifier = Modifier.width(230.dp).height(90.dp)
-            )
 
+            Button(
+
+                onClick = { navegacao?.navigate("login") },
+                colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent),
+                contentPadding = PaddingValues(0.dp),
+                modifier = Modifier.width(150.dp).padding(top = 20.dp)
+            ) {
+                Image(
+                    painter = painterResource(R.drawable.logo),
+                    contentDescription = "Logo",
+                    modifier = Modifier
+                        .height(90.dp)
+                        .width(230.dp)
+                )
+            }
             Spacer(modifier = Modifier.height(24.dp))
 
+
             Text(
-                text = "Esqueceu a senha?",
+                text = "Recuperar senha",
                 fontSize = 24.sp,
                 fontWeight = FontWeight.Bold,
                 color = Color(0xFF037EF7)
             )
 
-            Spacer(modifier = Modifier.height(32.dp))
+            Spacer(modifier = Modifier.height(24.dp))
 
-            // Email field
-            Text(text = "Digite seu email:", fontSize = 16.sp)
-            Spacer(modifier = Modifier.height(8.dp))
             OutlinedTextField(
                 value = email.value,
                 onValueChange = { email.value = it },
-                placeholder = { Text("example@gmail.com") },
+                label = { Text("Digite seu e-mail") },
                 shape = RoundedCornerShape(30.dp),
                 singleLine = true,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .shadow(4.dp, RoundedCornerShape(30.dp))
-                    .background(Color(0xFFF2F9FF), RoundedCornerShape(30.dp))
             )
 
-            Spacer(modifier = Modifier.height(16.dp))
-
-            // Palavra-chave field
-            Text(text = "Palavra-chave:", fontSize = 16.sp)
-            Spacer(modifier = Modifier.height(8.dp))
-            OutlinedTextField(
-                value = palavraChave.value,
-                onValueChange = { palavraChave.value = it },
-                placeholder = { Text("exemplo123") },
-                visualTransformation = PasswordVisualTransformation(),
-                shape = RoundedCornerShape(30.dp),
-                singleLine = true,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .shadow(10.dp, RoundedCornerShape(30.dp))
-                    .background(Color(0xFFF2F9FF), RoundedCornerShape(30.dp))
-            )
-
-            Spacer(modifier = Modifier.height(40.dp))
+            Spacer(modifier = Modifier.height(24.dp))
 
             Button(
                 onClick = {
-                    if (email.value.text.isBlank() || palavraChave.value.text.isBlank()) {
-                        mensagem.value = "Por favor, preencha todos os campos"
+                    if (email.value.text.isBlank()) {
+                        mensagem.value = "Preencha o e-mail"
                         return@Button
                     }
+
                     loading.value = true
                     mensagem.value = null
 
-                    val call = RetrofitFactory().getUsuarioService().listarUsuarios()
-                    call.enqueue(object : Callback<Result> {
-                        override fun onResponse(call: Call<Result>, response: Response<Result>) {
-                            loading.value = false
-                            if (response.isSuccessful) {
-                                val usuarios = response.body()?.usuario
-                                val usuarioEncontrado = usuarios?.find {
-                                    it.email == email.value.text && it.palavra_chave == palavraChave.value.text
-                                }
-                                if (usuarioEncontrado != null) {
-                                    val idUsuario = usuarioEncontrado.id_usuario  // pega o id do usuário
-                                    navegacao!!.navigate("redefinir_senha/$idUsuario")
-                                } else {
-                                    mensagem.value = "Email ou palavra-chave incorretos"
-                                }
-                            } else {
-                                mensagem.value = "Erro no servidor: ${response.code()}"
-                            }
-                        }
+                    val requisicao = EmailRequest(
+                        email = email.value.text
+                    )
 
-                        override fun onFailure(call: Call<Result>, t: Throwable) {
-                            loading.value = false
-                            mensagem.value = "Falha na conexão: ${t.message}"
-                        }
-                    })
+
+                    RetrofitEmailFactory.getEmailService().enviarEmail(requisicao)
+                        .enqueue(object : Callback<Void> {
+                            override fun onResponse(call: Call<Void>, response: Response<Void>) {
+                                loading.value = false
+                                if (response.isSuccessful) {
+                                    val emailEncoded = Uri.encode(email.value.text)
+                                    navegacao?.navigate("verificar_codigo/$emailEncoded")
+                                } else {
+                                    Log.e("EmailErro", "Erro HTTP ${response.code()}")
+                                    mensagem.value = "Erro ao enviar e-mail. Código: ${response.code()}"
+                                }
+                            }
+
+                            override fun onFailure(call: Call<Void>, t: Throwable) {
+                                loading.value = false
+                                Log.e("EmailErro", "Erro de rede", t)
+                                mensagem.value = "Erro de rede: ${t.message}"
+                            }
+
+                        })
                 },
-                shape = RoundedCornerShape(50.dp),
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(50.dp)
-                    .shadow(8.dp, RoundedCornerShape(50.dp)),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = Color(0xFF037EF7),
-                    contentColor = Color.White
-                )
+                    .height(50.dp),
+                shape = RoundedCornerShape(30.dp),
+                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF037EF7))
             ) {
                 Text(
-                    text = if (loading.value) "Carregando..." else "Recuperar Senha",
-                    fontSize = 18.sp,
-                    fontWeight = FontWeight.Bold
-                )
-            }
-            mensagem.value?.let {
-                Spacer(modifier = Modifier.height(20.dp))
-                Text(
-                    text = it,
-                    color = if (it.startsWith("Sua senha é")) Color(0xFF037EF7) else Color.Red,
-                    fontWeight = FontWeight.Medium,
+                    text = if (loading.value) "Enviando..." else "Enviar Código",
+                    fontWeight = FontWeight.Bold,
                     fontSize = 16.sp
                 )
+            }
+
+            mensagem.value?.let {
+                Spacer(modifier = Modifier.height(16.dp))
+                Text(it, color = if (it.contains("Erro")) Color.Red else Color(0xFF037EF7))
             }
         }
     }
 }
+
+
 
 @Preview
 @Composable

@@ -1,6 +1,7 @@
 package com.example.planifyeventos.screens.components
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import com.example.planifyeventos.utils.formatarData
 import androidx.compose.foundation.layout.Spacer
@@ -37,7 +38,7 @@ fun UsuarioCard(
         modifier = Modifier
             .padding(8.dp)
             .fillMaxWidth()
-            .height(600.dp),
+            .height(650.dp),
         colors = CardDefaults.cardColors(containerColor = Color(0xaaffffff)),
         border = BorderStroke(
             width = 16.dp,
@@ -46,12 +47,13 @@ fun UsuarioCard(
     ) {
         Column (
             modifier = Modifier.fillMaxSize(),
-            horizontalAlignment = Alignment.CenterHorizontally
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Top
         ){
             Card(
                 modifier = Modifier
                     .padding(top = 26.dp)
-                    .size(90.dp),
+                    .size(180.dp),
                 colors = CardDefaults.cardColors(containerColor = Color(0xFF037EF7)),
                 shape = CircleShape
             ) {
@@ -60,11 +62,15 @@ fun UsuarioCard(
                     contentDescription = "",
                     modifier = Modifier
                         .fillMaxSize(),
-                    contentScale = ContentScale.Crop
+                    contentScale = ContentScale.Fit
                 )
             }
-            Spacer(modifier = Modifier.height(36.dp))
-            Column {
+            Column (
+                modifier = Modifier
+                    .height(300.dp),
+                verticalArrangement = Arrangement.SpaceBetween
+            ){
+                Spacer(modifier = Modifier.height(30.dp))
                 Text(text = "Nome de usuário:")
                 Text(text = nome)
                 Spacer(modifier = Modifier.height(8.dp))
@@ -77,11 +83,6 @@ fun UsuarioCard(
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(text = "Data de nascimento:")
                 Text(text = data_nascimento.formatarData())
-                Spacer(modifier = Modifier.height(8.dp))
-                HorizontalDivider(modifier = Modifier.width(300.dp), color = Color.Black)
-                Spacer(modifier = Modifier.height(8.dp))
-                Text(text = "Minha palavra chave:")
-                Text(text = palavra_chave)
                 Spacer(modifier = Modifier.height(8.dp))
                 HorizontalDivider(modifier = Modifier.width(300.dp), color = Color.Black)
                 Spacer(modifier = Modifier.height(8.dp))
