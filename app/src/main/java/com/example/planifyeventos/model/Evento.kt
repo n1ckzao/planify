@@ -7,11 +7,15 @@ data class Evento(
     val data_evento: String,
     val horario: String,
     val local: String,
-    val imagem: String?,
+    val imagem: String,
     val limite_participante: Int,
     val valor_ingresso: Double,
     val id_estado: String,
     val id_categoria: String,
     val id_usuario: Int,
-    val participante: List<Usuario>
+    val participante: List<Usuario> = emptyList(),
+
+
+    val nomeCategoria: String? = null,
+    val nomeEstado: String? = null
 )

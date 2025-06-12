@@ -13,6 +13,10 @@ import com.example.planifyeventos.model.Evento
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
+import coil.request.ImageRequest
+import com.example.planifyeventos.R
+import com.example.planifyeventos.utils.isImagemValida
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -31,7 +35,7 @@ fun formatarHora(hora: String?): String {
     if (hora.isNullOrBlank()) return "Hora inválida"
 
     val formatosEntrada = listOf(
-        "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", // ← formato da sua API
+        "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'",
         "yyyy-MM-dd'T'HH:mm:ss",
         "HH:mm:ss",
         "HH:mm",
@@ -41,7 +45,7 @@ fun formatarHora(hora: String?): String {
     for (formato in formatosEntrada) {
         try {
             val sdfEntrada = SimpleDateFormat(formato, Locale.getDefault())
-            sdfEntrada.timeZone = TimeZone.getTimeZone("UTC") // importante para 'Z'
+            sdfEntrada.timeZone = TimeZone.getTimeZone("UTC")
             sdfEntrada.isLenient = false
             val date = sdfEntrada.parse(hora)
             if (date != null) return formatoSaida.format(date)
@@ -51,45 +55,43 @@ fun formatarHora(hora: String?): String {
     return "Hora inválida"
 }
 
-
-
-
 @Composable
 fun EventoCard(evento: Evento, onClick: () -> Unit = {}) {
+    val imagemUrl = if (isImagemValida(evento.imagem)) evento.imagem else "https://via.placeholder.com/400x200"
+
     Card(
         modifier = Modifier
             .padding(8.dp)
             .fillMaxWidth(),
         shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = Color(0xFFADD8E6) // Cor do fundo do card
-        ),
+        colors = CardDefaults.cardColors(containerColor = Color(0xFFADD8E6)),
         elevation = CardDefaults.cardElevation(4.dp)
     ) {
         Column (
-            modifier = Modifier
-                .fillMaxSize(),
+            modifier = Modifier.fillMaxSize(),
             verticalArrangement = Arrangement.SpaceBetween
         ){
             AsyncImage(
-                model = evento.imagem,
+                model = ImageRequest.Builder(LocalContext.current)
+                    .data(imagemUrl)
+                    .crossfade(true)
+                    .error(R.drawable.logo)
+                    .build(),
                 contentDescription = evento.titulo,
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(180.dp)
                     .clip(RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp)),
-                contentScale = ContentScale.Crop
+                contentScale = ContentScale.Fit,
+                error = null
             )
             Column(Modifier.padding(12.dp)) {
                 Text(evento.titulo, style = MaterialTheme.typography.titleMedium)
                 Text(evento.descricao, fontSize = 14.sp, maxLines = 2)
                 Spacer(Modifier.height(8.dp))
                 Text("Local: ${evento.local}", fontSize = 12.sp)
-                Text("Estado: ${evento.id_estado}", fontSize = 12.sp)
-                Text(
-                    text = "Categorias: ${evento.id_categoria}",
-                    fontSize = 12.sp
-                )
+                Text("Estado: ${evento.nomeEstado ?: evento.id_estado}", fontSize = 12.sp)
+                Text("Categoria: ${evento.nomeCategoria ?: evento.id_categoria}", fontSize = 12.sp)
                 Text("Data: ${formatarData(evento.data_evento)} às ${formatarHora(evento.horario)}", fontSize = 12.sp)
 
                 val valor = evento.valor_ingresso
@@ -97,8 +99,6 @@ fun EventoCard(evento: Evento, onClick: () -> Unit = {}) {
                     text = if (valor != null) "Valor: R$ %.2f".format(valor) else "Valor: R$ --",
                     fontSize = 12.sp
                 )
-
-
             }
         }
     }

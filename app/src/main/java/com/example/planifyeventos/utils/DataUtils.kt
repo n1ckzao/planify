@@ -14,3 +14,7 @@ fun String.formatarData(): String {
         this // Em caso de erro, retorna a string original
     }
 }
+
+fun isImagemValida(url: String?): Boolean {
+    return !url.isNullOrBlank() && (url.startsWith("http://") || url.startsWith("https://"))
+}

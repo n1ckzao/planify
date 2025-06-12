@@ -2,6 +2,7 @@ package com.example.planifyeventos.screens
 
 import android.util.Log
 import android.widget.Toast
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -23,9 +24,11 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 import com.example.planifyeventos.R
 import com.example.planifyeventos.model.*
 import com.example.planifyeventos.screens.components.EventoCard
@@ -35,7 +38,7 @@ import com.example.planifyeventos.model.Categoria
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun Home(navegacao: NavHostController?) {
     val pagerState = rememberPagerState { 5 }
@@ -62,59 +65,90 @@ fun Home(navegacao: NavHostController?) {
         eventosFiltrados.value = eventosState.value.filter { evento ->
             val pesquisaOk = textoPesquisa.isBlank() || evento.titulo.contains(textoPesquisa, ignoreCase = true)
 
-            // Corrigido: evento.categoria é String, não precisa de .any()
+            val eventoCategoriaNome = categorias.find { it.id_categoria.toString() == evento.id_categoria }?.categoria ?: ""
             val categoriaOk = categoriasSelecionadas.isEmpty() ||
-                    categoriasSelecionadas.any { it.equals(evento.id_categoria, ignoreCase = true) }
+                    categoriasSelecionadas.any { it.equals(eventoCategoriaNome, ignoreCase = true) }
 
-            // Corrigido: evento.estado é String direta
+            val eventoEstadoNome = estados.find { it.id_estado.toString() == evento.id_estado }?.estado ?: ""
             val estadoOk = estadosSelecionados.isEmpty() ||
-                    estadosSelecionados.any { it.equals(evento.id_estado, ignoreCase = true) }
+                    estadosSelecionados.any { it.equals(eventoEstadoNome, ignoreCase = true) }
 
             pesquisaOk && categoriaOk && estadoOk
         }
     }
 
-    fun carregarCategorias() {
-        RetrofitFactory().getEventoService().listarCategorias()
-            .enqueue(object : Callback<ResultCategoria> {
-                override fun onResponse(call: Call<ResultCategoria>, response: Response<ResultCategoria>) {
-                    categorias = response.body()?.categoria ?: emptyList()
-                    showCategoriaDialog = true
-                }
-                override fun onFailure(call: Call<ResultCategoria>, t: Throwable) {
-                    Log.e("Home", "Erro ao carregar categorias: ${t.message}")
-                }
-            })
-    }
-
-    fun carregarEstados() {
-        RetrofitFactory().getEventoService().listarEstados()
-            .enqueue(object : Callback<ResultEstado> {
-                override fun onResponse(call: Call<ResultEstado>, response: Response<ResultEstado>) {
-                    estados = response.body()?.estado ?: emptyList()
-                    showEstadoDialog = true
-                }
-                override fun onFailure(call: Call<ResultEstado>, t: Throwable) {
-                    Log.e("Home", "Erro ao carregar estados: ${t.message}")
-                }
-            })
-    }
-
     LaunchedEffect(Unit) {
-        RetrofitFactory().getEventoService().listarEventos()
-            .enqueue(object : Callback<ResultEvento> {
-                override fun onResponse(call: Call<ResultEvento>, response: Response<ResultEvento>) {
-                    if (response.isSuccessful) {
-                        eventosState.value = response.body()?.eventos ?: emptyList()
-                        eventosFiltrados.value = eventosState.value
-                    } else {
-                        Log.e("Home", "Erro no código de resposta: ${response.code()}")
-                    }
+        RetrofitFactory().getEventoService().listarEstados().enqueue(object : Callback<ResultEstado> {
+            override fun onResponse(call: Call<ResultEstado>, response: Response<ResultEstado>) {
+                if (response.isSuccessful) {
+                    estados = response.body()?.estado ?: emptyList()
+
+                    RetrofitFactory().getEventoService().listarCategorias().enqueue(object : Callback<ResultCategoria> {
+                        override fun onResponse(call: Call<ResultCategoria>, response: Response<ResultCategoria>) {
+                            if (response.isSuccessful) {
+                                categorias = response.body()?.categoria ?: emptyList()
+
+                                RetrofitFactory().getEventoService().listarEventos()
+                                    .enqueue(object : Callback<ResultEvento> {
+                                        override fun onResponse(call: Call<ResultEvento>, response: Response<ResultEvento>) {
+                                            if (response.isSuccessful) {
+                                                val eventosRecebidos = response.body()?.eventos ?: emptyList()
+
+
+                                                val eventosComNomes = eventosRecebidos.map { evento ->
+                                                    val idCategoriaValida = evento.id_categoria?.takeIf {
+                                                        it.lowercase() != "null" && it.isNotBlank()
+                                                    }?.trim()
+
+                                                    Log.d("DEBUG", "Evento: ${evento.titulo} | id_categoria: '$idCategoriaValida'")
+
+                                                    val nomeCategoria = categorias.find {
+                                                        it.id_categoria.toString() == evento.id_categoria
+                                                    }?.categoria ?: "Desconhecido"
+
+                                                    val nomeEstado = estados.find {
+                                                        it.id_estado.toString() == evento.id_estado
+                                                    }?.estado ?: "Estado desconhecido"
+
+                                                    Log.d("DEBUG", "Evento '${evento.titulo}' → Categoria encontrada: $nomeCategoria")
+
+                                                    evento.copy(
+                                                        id_categoria = evento.id_categoria ?: "",
+                                                        participante = evento.participante ?: emptyList(),
+                                                        nomeEstado = nomeEstado,
+                                                        nomeCategoria = nomeCategoria
+                                                    )
+                                                }
+                                                eventosState.value = eventosComNomes
+                                                eventosFiltrados.value = eventosComNomes
+                                            } else {
+                                                Log.e("Home", "Erro no código de resposta: ${response.code()}")
+                                            }
+                                        }
+
+                                        override fun onFailure(call: Call<ResultEvento>, t: Throwable) {
+                                            Log.e("Home", "Falha na requisição: ${t.message}")
+                                        }
+                                    })
+
+                            } else {
+                                Log.e("Home", "Erro ao carregar categorias")
+                            }
+                        }
+
+                        override fun onFailure(call: Call<ResultCategoria>, t: Throwable) {
+                            Log.e("Home", "Falha ao carregar categorias: ${t.message}")
+                        }
+                    })
+                } else {
+                    Log.e("Home", "Erro ao carregar estados")
                 }
-                override fun onFailure(call: Call<ResultEvento>, t: Throwable) {
-                    Log.e("Home", "Falha na requisição: ${t.message}")
-                }
-            })
+            }
+
+            override fun onFailure(call: Call<ResultEstado>, t: Throwable) {
+                Log.e("Home", "Falha ao carregar estados: ${t.message}")
+            }
+        })
     }
 
     LazyColumn(
@@ -211,8 +245,8 @@ fun Home(navegacao: NavHostController?) {
                     .padding(vertical = 8.dp),
                 horizontalArrangement = Arrangement.SpaceEvenly
             ) {
-                Button(onClick = { carregarCategorias() }) { Text("Categoria") }
-                Button(onClick = { carregarEstados() }) { Text("Estado") }
+                Button(onClick = { showCategoriaDialog = true }) { Text("Categoria") }
+                Button(onClick = { showEstadoDialog = true }) { Text("Estado") }
                 Button(onClick = { navegacao?.navigate("criar_evento") }) { Text("Criar Evento") }
             }
 
@@ -256,4 +290,11 @@ fun Home(navegacao: NavHostController?) {
             onDismiss = { showEstadoDialog = false }
         )
     }
+}
+
+@Preview
+@Composable
+private fun HomePreview() {
+    val navController = rememberNavController()
+    Home(navegacao = navController)
 }

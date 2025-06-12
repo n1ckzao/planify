@@ -6,7 +6,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 object  RetrofitEmailFactory {
     fun getEmailService(): EmailService {
         return Retrofit.Builder()
-            .baseUrl("http://10.107.134.5:8080/v1/planify/")
+            .baseUrl("http://10.107.144.27:8080/v1/planify/")
             .addConverterFactory(GsonConverterFactory.create())
             .build()
             .create(EmailService::class.java)

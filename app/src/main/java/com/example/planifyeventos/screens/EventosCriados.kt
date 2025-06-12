@@ -42,9 +42,11 @@ fun EventosCriados(navegacao: NavHostController) {
             override fun onResponse(call: Call<ResultEvento>, response: Response<ResultEvento>) {
                 loading.value = false
                 if (response.isSuccessful) {
+                    // Filtra eventos com base no id do usuário
                     val eventosFiltrados = response.body()?.eventos?.filter {
                         it.id_usuario == idUsuarioLogado
                     } ?: emptyList()
+
                     eventosUsuario.value = eventosFiltrados
                 } else {
                     erro.value = "Erro ao carregar eventos: ${response.code()}"
@@ -58,23 +60,35 @@ fun EventosCriados(navegacao: NavHostController) {
         })
     }
 
-
-    Box(modifier = Modifier.fillMaxSize().padding(16.dp)) {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp)
+    ) {
         when {
             loading.value -> {
                 CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
             }
+
             erro.value != null -> {
-                Text(text = erro.value ?: "", color = Color.Red, modifier = Modifier.align(Alignment.Center))
+                Text(
+                    text = erro.value ?: "",
+                    color = Color.Red,
+                    modifier = Modifier.align(Alignment.Center)
+                )
             }
+
+            eventosUsuario.value.isEmpty() -> {
+                Text(
+                    "Você ainda não criou eventos.",
+                    modifier = Modifier.align(Alignment.Center)
+                )
+            }
+
             else -> {
-                if (eventosUsuario.value.isEmpty()) {
-                    Text("Você ainda não criou eventos.", modifier = Modifier.align(Alignment.Center))
-                } else {
-                    LazyColumn {
-                        items(eventosUsuario.value) { evento ->
-                            EventoCard(evento = evento)
-                        }
+                LazyColumn {
+                    items(eventosUsuario.value) { evento ->
+                        EventoCard(evento = evento)
                     }
                 }
             }

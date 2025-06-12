@@ -9,6 +9,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.planifyeventos.screens.Cadastro
 import com.example.planifyeventos.screens.CriarEvento
+import com.example.planifyeventos.screens.EventosCriados
 import com.example.planifyeventos.screens.Home
 import com.example.planifyeventos.screens.Login
 import com.example.planifyeventos.screens.Perfil
@@ -40,6 +41,8 @@ class MainActivity : ComponentActivity() {
                 composable(route = "home") { Home(navegacao) }
                 composable(route = "perfil") { Perfil(navegacao) }
                 composable(route = "recuperar_senha") { RecuperarSenha(navegacao) }
+
+                composable(route = "eventos_criados") { EventosCriados(navegacao) }
 
 
                 composable(route = "verificar_codigo/{email}") { backStackEntry ->

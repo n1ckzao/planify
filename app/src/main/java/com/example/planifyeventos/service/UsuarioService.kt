@@ -25,6 +25,7 @@ interface UsuarioService {
     @GET("usuario/{id}")
     fun listarUsuarioPorId(@Path("id") id: Int): Call<Usuario>
 
+
     // Função para alterar a senha
 
     @PUT("usuario/senha/{id}")

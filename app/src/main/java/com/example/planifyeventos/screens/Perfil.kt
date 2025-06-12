@@ -127,7 +127,28 @@ fun Perfil(navegacao: NavHostController) {
                                 }
                             }
                         ) {
-                            Text("Sair")
+                            Text("Sair da Conta")
+                        }
+                    }
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(bottom = 16.dp),
+                        horizontalArrangement = Arrangement.Center
+                    ){
+                        Button(
+
+                            onClick = { navegacao.navigate("eventos_criados") },
+                            colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent),
+                            contentPadding = PaddingValues(0.dp),
+                            modifier = Modifier.width(150.dp).padding(top = 20.dp)
+                        ) {
+                            Image(
+                                painter = painterResource(R.drawable.img_1),
+                                contentDescription = "Eventos",
+                                modifier = Modifier
+                                    .width(100.dp)
+                            )
                         }
                     }
                     UsuarioCard(

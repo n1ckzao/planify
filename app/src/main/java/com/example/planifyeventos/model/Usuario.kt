@@ -7,7 +7,7 @@ data class Usuario(
     val senha: String = "",
     val data_nascimento: String = "",
     val palavra_chave: String = "",
-    val foto_perfil: String = ""
+    val foto_perfil: String = "https://picsum.photos/200"
 )
 data class SenhaRequest(
     val senha: String = ""
