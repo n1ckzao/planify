@@ -11,6 +11,7 @@ import com.example.planifyeventos.screens.Cadastro
 import com.example.planifyeventos.screens.CriarEvento
 import com.example.planifyeventos.screens.EventosCriados
 import com.example.planifyeventos.screens.Home
+import com.example.planifyeventos.screens.Ingressos
 import com.example.planifyeventos.screens.Login
 import com.example.planifyeventos.screens.Perfil
 import com.example.planifyeventos.screens.RecuperarSenha
@@ -41,8 +42,8 @@ class MainActivity : ComponentActivity() {
                 composable(route = "home") { Home(navegacao) }
                 composable(route = "perfil") { Perfil(navegacao) }
                 composable(route = "recuperar_senha") { RecuperarSenha(navegacao) }
-
-                composable(route = "eventos_criados") { EventosCriados(navegacao) }
+                composable("eventos_criados") { EventosCriados(navegacao) }
+                composable("ingressos") { Ingressos(navegacao) }
 
 
                 composable(route = "verificar_codigo/{email}") { backStackEntry ->

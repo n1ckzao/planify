@@ -56,49 +56,60 @@ fun formatarHora(hora: String?): String {
 }
 
 @Composable
-fun EventoCard(evento: Evento, onClick: () -> Unit = {}) {
-    val imagemUrl = if (isImagemValida(evento.imagem)) evento.imagem else "https://via.placeholder.com/400x200"
-
+fun EventoCard(
+    evento: Evento,
+    exibirExcluir: Boolean = false,
+    exibirSair: Boolean = false,
+    onAcaoClick: (() -> Unit)? = null
+) {
     Card(
         modifier = Modifier
             .padding(8.dp)
             .fillMaxWidth(),
         shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(containerColor = Color(0xFFADD8E6)),
+        colors = CardDefaults.cardColors(
+            containerColor = Color(0xFFADD8E6)
+        ),
         elevation = CardDefaults.cardElevation(4.dp)
     ) {
-        Column (
+        Column(
             modifier = Modifier.fillMaxSize(),
             verticalArrangement = Arrangement.SpaceBetween
-        ){
+        ) {
             AsyncImage(
-                model = ImageRequest.Builder(LocalContext.current)
-                    .data(imagemUrl)
-                    .crossfade(true)
-                    .error(R.drawable.logo)
-                    .build(),
+                model = evento.imagem,
                 contentDescription = evento.titulo,
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(180.dp)
                     .clip(RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp)),
-                contentScale = ContentScale.Fit,
-                error = null
+                contentScale = ContentScale.Crop
             )
             Column(Modifier.padding(12.dp)) {
                 Text(evento.titulo, style = MaterialTheme.typography.titleMedium)
                 Text(evento.descricao, fontSize = 14.sp, maxLines = 2)
                 Spacer(Modifier.height(8.dp))
                 Text("Local: ${evento.local}", fontSize = 12.sp)
-                Text("Estado: ${evento.nomeEstado ?: evento.id_estado}", fontSize = 12.sp)
-                Text("Categoria: ${evento.nomeCategoria ?: evento.id_categoria}", fontSize = 12.sp)
+                Text("Estado: ${evento.id_estado}", fontSize = 12.sp)
+                Text("Categorias: ${evento.id_categoria}", fontSize = 12.sp)
                 Text("Data: ${formatarData(evento.data_evento)} às ${formatarHora(evento.horario)}", fontSize = 12.sp)
-
                 val valor = evento.valor_ingresso
                 Text(
                     text = if (valor != null) "Valor: R$ %.2f".format(valor) else "Valor: R$ --",
                     fontSize = 12.sp
                 )
+                Spacer(modifier = Modifier.height(8.dp))
+                if (exibirExcluir || exibirSair) {
+                    Button(
+                        onClick = { onAcaoClick?.invoke() },
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = if (exibirExcluir) Color.Red else Color.Gray,
+                            contentColor = Color.White
+                        )
+                    ) {
+                        Text(if (exibirExcluir) "Excluir" else "Sair do evento")
+                    }
+                }
             }
         }
     }

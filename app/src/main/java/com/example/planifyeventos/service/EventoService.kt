@@ -23,9 +23,12 @@ interface EventoService {
     @GET("estado")
     fun listarEstados(): Call<ResultEstado>
 
+    @GET("evento")
+    fun listarTodosEventos(): Call<ResultEvento>
+
     @GET("categoria")
     fun listarCategorias(): Call<ResultCategoria>
 
-    @GET("usuario/evento/{id_usuario}")
-    fun listarEventoPorUsuario(@Path("id_usuario")id_usuario: Int): Call<Evento>
+    @GET("usuario/evento/{id}")
+    fun listarEventoPorUsuario(@Path("id")id_usuario: Int): Call<Evento>
 }
