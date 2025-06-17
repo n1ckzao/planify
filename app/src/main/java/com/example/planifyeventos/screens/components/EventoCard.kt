@@ -90,8 +90,8 @@ fun EventoCard(
                 Text(evento.descricao, fontSize = 14.sp, maxLines = 2)
                 Spacer(Modifier.height(8.dp))
                 Text("Local: ${evento.local}", fontSize = 12.sp)
-                Text("Estado: ${evento.id_estado}", fontSize = 12.sp)
-                Text("Categorias: ${evento.id_categoria}", fontSize = 12.sp)
+                Text("Estado: ${evento.nomeEstado}", fontSize = 12.sp)
+                Text("Categorias: ${evento.nomeCategoria}", fontSize = 12.sp)
                 Text("Data: ${formatarData(evento.data_evento)} às ${formatarHora(evento.horario)}", fontSize = 12.sp)
                 val valor = evento.valor_ingresso
                 Text(

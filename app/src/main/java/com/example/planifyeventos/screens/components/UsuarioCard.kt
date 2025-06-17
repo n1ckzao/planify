@@ -1,106 +1,110 @@
 package com.example.planifyeventos.screens.components
 
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.Divider
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Text
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
-import coil.request.ImageRequest
-import com.example.planifyeventos.R
-import com.example.planifyeventos.utils.isImagemValida
+import com.example.planifyeventos.utils.formatarData
 
 @Composable
 fun UsuarioCard(
-    nome: String = "Nome de usuário",
-    email: String = "Email de usuário",
-    senha: String = "Senha",
-    data_nascimento: String = "2000-01-01",
-    foto_perfil: String = ""
+    nome: String,
+    email: String,
+    senha: String,
+    data_nascimento: String,
+    foto_perfil: String
 ) {
-    val imagemUrl = if (isImagemValida(foto_perfil)) foto_perfil else "https://via.placeholder.com/180"
-
     Card(
         modifier = Modifier
-            .padding(8.dp)
-            .fillMaxWidth()
-            .height(650.dp),
-        colors = CardDefaults.cardColors(containerColor = Color(0xaaffffff)),
-        border = BorderStroke(
-            width = 16.dp,
-            color = Color(0xFF008EFF)
-        )
+            .padding(16.dp)
+            .fillMaxWidth(),
+        colors = CardDefaults.cardColors(containerColor = Color(0xFFEAF6FF)),
+        border = BorderStroke(2.dp, Color(0xFF008EFF)),
+        elevation = CardDefaults.cardElevation(8.dp)
     ) {
-        Column (
-            modifier = Modifier.fillMaxSize(),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Top
-        ){
+        Column(
+            modifier = Modifier
+                .padding(24.dp)
+                .fillMaxWidth(),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            // Foto de Perfil
             Card(
-                modifier = Modifier
-                    .padding(top = 26.dp)
-                    .size(180.dp),
-                colors = CardDefaults.cardColors(containerColor = Color(0xFF037EF7)),
-                shape = CircleShape
+                modifier = Modifier.size(100.dp),
+                shape = CircleShape,
+                colors = CardDefaults.cardColors(containerColor = Color(0xFF037EF7))
             ) {
                 AsyncImage(
-                    model = ImageRequest.Builder(LocalContext.current)
-                        .data(imagemUrl)
-                        .crossfade(true)
-                        .error(R.drawable.pe)
-                        .build(),
-                    contentDescription = null,
-                    modifier = Modifier.fillMaxSize(),
+                    model = foto_perfil,
+                    contentDescription = "Foto de perfil",
                     contentScale = ContentScale.Crop,
+                    modifier = Modifier.fillMaxSize()
                 )
+                Text(
+                    text = "URL da imagem: $foto_perfil",
+                    color = Color.Red
+                )
+
             }
-            Column (
-                modifier = Modifier.height(300.dp),
-                verticalArrangement = Arrangement.SpaceBetween
-            ){
-                Spacer(modifier = Modifier.height(30.dp))
-                Text(text = "Nome de usuário:")
-                Text(text = nome)
-                Spacer(modifier = Modifier.height(8.dp))
-                Divider(modifier = Modifier.width(300.dp), color = Color.Black)
-                Spacer(modifier = Modifier.height(8.dp))
-                Text(text = "Meu email:")
-                Text(text = email)
-                Spacer(modifier = Modifier.height(8.dp))
-                Divider(modifier = Modifier.width(300.dp), color = Color.Black)
-                Spacer(modifier = Modifier.height(8.dp))
-                Text(text = "Data de nascimento:")
-                Text(text = formatarData(data_nascimento))
-                Spacer(modifier = Modifier.height(8.dp))
-                Divider(modifier = Modifier.width(300.dp), color = Color.Black)
-                Spacer(modifier = Modifier.height(8.dp))
-                Text(text = "Minha senha:")
-                Text(text = senha)
-            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // Nome
+            Text(
+                text = nome,
+                fontSize = 20.sp,
+                fontWeight = FontWeight.Bold,
+                color = Color(0xFF037EF7)
+            )
+            Spacer(modifier = Modifier.height(4.dp))
+            Text(
+                text = email,
+                fontSize = 14.sp,
+                color = Color.DarkGray
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+            Divider(thickness = 1.dp, color = Color.Gray, modifier = Modifier.fillMaxWidth(0.8f))
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // Data de nascimento
+            Text(
+                text = "Data de nascimento:",
+                fontSize = 14.sp,
+                color = Color.Gray
+            )
+            Text(
+                text = formatarData(data_nascimento),
+                fontSize = 16.sp,
+                fontWeight = FontWeight.Medium,
+                color = Color.Black
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+            Divider(thickness = 1.dp, color = Color.Gray, modifier = Modifier.fillMaxWidth(0.8f))
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // Senha
+            Text(
+                text = "Senha:",
+                fontSize = 14.sp,
+                color = Color.Gray
+            )
+            Text(
+                text = senha,
+                fontSize = 16.sp,
+                fontWeight = FontWeight.Medium,
+                color = Color.Black
+            )
         }
     }
-}
-
-@Preview
-@Composable
-private fun UsurioCardPreview() {
-    UsuarioCard()
 }

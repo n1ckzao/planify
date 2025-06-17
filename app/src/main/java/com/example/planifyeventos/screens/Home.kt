@@ -96,18 +96,17 @@ fun Home(navegacao: NavHostController?) {
 
 
                                                 val eventosComNomes = eventosRecebidos.map { evento ->
-                                                    val idCategoriaValida = evento.id_categoria?.takeIf {
-                                                        it.lowercase() != "null" && it.isNotBlank()
-                                                    }?.trim()
-
-                                                    Log.d("DEBUG", "Evento: ${evento.titulo} | id_categoria: '$idCategoriaValida'")
+                                                    val eventoIdCategoria = evento.id_categoria?.trim()?.toIntOrNull()
+                                                    val eventoIdEstado = evento.id_estado?.trim()?.toIntOrNull()
 
                                                     val nomeCategoria = categorias.find {
-                                                        it.id_categoria.toString() == evento.id_categoria
+                                                        it.id_categoria == eventoIdCategoria
                                                     }?.categoria ?: "Desconhecido"
 
+                                                    Log.d("DEBUG", "Evento '${evento.titulo}' → Categoria encontrada: $nomeCategoria")
+
                                                     val nomeEstado = estados.find {
-                                                        it.id_estado.toString() == evento.id_estado
+                                                        it.id_estado == eventoIdEstado
                                                     }?.estado ?: "Estado desconhecido"
 
                                                     Log.d("DEBUG", "Evento '${evento.titulo}' → Categoria encontrada: $nomeCategoria")

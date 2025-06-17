@@ -7,6 +7,7 @@ import com.example.planifyeventos.model.ResultEvento
 import com.example.planifyeventos.model.Usuario
 import retrofit2.Call
 import retrofit2.http.Body
+import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.Headers
 import retrofit2.http.POST
@@ -20,15 +21,19 @@ interface EventoService {
     @Headers("Content-Type: application/json")
     fun inserirEvento(@Body evento: Evento): Call<Evento>
 
+    @GET("evento") // ajuste a URL conforme sua API
+    fun listarTodosEventos(): Call<ResultEvento>
+
     @GET("estado")
     fun listarEstados(): Call<ResultEstado>
-
-    @GET("evento")
-    fun listarTodosEventos(): Call<ResultEvento>
 
     @GET("categoria")
     fun listarCategorias(): Call<ResultCategoria>
 
-    @GET("usuario/evento/{id}")
-    fun listarEventoPorUsuario(@Path("id")id_usuario: Int): Call<Evento>
+    @DELETE("evento/{id}")
+    fun excluirEvento(@Path("id") id: Int): Call<Void>
+
+    @DELETE("participar")
+    @Headers("Content-Type: application/json")
+    fun sairDoEvento(@Body dados: Map<String, Int>): Call<Void>
 }

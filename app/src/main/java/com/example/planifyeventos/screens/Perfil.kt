@@ -1,13 +1,10 @@
 package com.example.planifyeventos.screens
 
-import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -34,6 +31,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import com.example.planifyeventos.R
+import com.example.planifyeventos.screens.components.NavegacaoBotoes
 import com.example.planifyeventos.utils.SharedPrefHelper
 
 @Composable
@@ -42,7 +40,6 @@ fun Perfil(navegacao: NavHostController) {
     val loading = remember { mutableStateOf(true) }
     val errorMessage = remember { mutableStateOf<String?>(null) }
     val context = LocalContext.current
-
     val emailSalvo = SharedPrefHelper.recuperarEmail(context)
 
     LaunchedEffect(Unit) {
@@ -100,7 +97,8 @@ fun Perfil(navegacao: NavHostController) {
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(bottom = 16.dp),
-                        horizontalArrangement = Arrangement.SpaceBetween
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
                         Button(
 
@@ -130,27 +128,7 @@ fun Perfil(navegacao: NavHostController) {
                             Text("Sair da Conta")
                         }
                     }
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(bottom = 16.dp),
-                        horizontalArrangement = Arrangement.Center
-                    ){
-                        Button(
 
-                            onClick = { navegacao.navigate("eventos_criados") },
-                            colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent),
-                            contentPadding = PaddingValues(0.dp),
-                            modifier = Modifier.width(150.dp).padding(top = 20.dp)
-                        ) {
-                            Image(
-                                painter = painterResource(R.drawable.img_1),
-                                contentDescription = "Eventos",
-                                modifier = Modifier
-                                    .width(100.dp)
-                            )
-                        }
-                    }
                     UsuarioCard(
                         nome = usuarioLogado.value!!.nome,
                         email = usuarioLogado.value!!.email,
@@ -158,6 +136,11 @@ fun Perfil(navegacao: NavHostController) {
                         foto_perfil = usuarioLogado.value!!.foto_perfil,
                         senha = usuarioLogado.value!!.senha
                     )
+
+                    Spacer(modifier = Modifier.height(24.dp))
+
+                    // Botões de navegação
+                    NavegacaoBotoes(navegacao)
                 }
             }
         }
